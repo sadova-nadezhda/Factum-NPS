@@ -1,0 +1,151 @@
+﻿.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 100;
+  backdrop-filter: blur(2px);
+}
+
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 101;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  border: 0.5px solid var(--border);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.12);
+  width: calc(500 * var(--width-multiplier));
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: calc(24 * var(--width-multiplier));
+
+  @media (max-width: 767px) {
+    width: calc(100vw - 32px);
+    max-height: 85vh;
+    top: auto;
+    bottom: 16px;
+    transform: translateX(-50%);
+    border-radius: calc(16 * var(--width-multiplier));
+  }
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: calc(24 * var(--width-multiplier));
+}
+
+.title {
+  font-size: calc(18 * var(--width-multiplier));
+  font-weight: 500;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: calc(26 * var(--width-multiplier));
+  line-height: 1;
+}
+
+.sectionBlock {
+  display: flex;
+  flex-direction: column;
+  gap: calc(10 * var(--width-multiplier));
+  margin-bottom: calc(20 * var(--width-multiplier));
+}
+
+.scoreInfo {
+  margin-top: calc(10 * var(--width-multiplier));
+  font-size: calc(12 * var(--width-multiplier));
+  color: var(--text-secondary);
+  padding: calc(6 * var(--width-multiplier)) calc(10 * var(--width-multiplier));
+  background: var(--surface-2);
+  border-radius: calc(8 * var(--width-multiplier));
+  display: flex;
+  align-items: center;
+  gap: calc(8 * var(--width-multiplier));
+}
+
+.textarea {
+  resize: none;
+  height: calc(90 * var(--width-multiplier));
+  width: 100%;
+  padding: calc(10 * var(--width-multiplier)) calc(12 * var(--width-multiplier));
+  border: 0.5px solid var(--border-md);
+  border-radius: var(--radius);
+  font-size: calc(14 * var(--width-multiplier));
+  color: var(--text-primary);
+  background: var(--surface-2);
+  outline: none;
+  margin-bottom: calc(24 * var(--width-multiplier));
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: calc(12 * var(--width-multiplier));
+}
+
+.dealSearchWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.dealDropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--surface);
+  border: 0.5px solid var(--border-md);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+  z-index: 200;
+  overflow: hidden;
+}
+
+.dealOption {
+  display: block;
+  width: 100%;
+  background: none;
+  border: none;
+  border-bottom: 0.5px solid var(--border);
+  cursor: pointer;
+  text-align: left;
+  padding: calc(10 * var(--width-multiplier)) calc(14 * var(--width-multiplier));
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: var(--surface-2);
+  }
+}
+
+.dealOptionTitle {
+  display: block;
+  font-size: calc(13 * var(--width-multiplier));
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: calc(2 * var(--width-multiplier));
+}
+
+.dealOptionMeta {
+  display: block;
+  font-size: calc(11 * var(--width-multiplier));
+  color: var(--text-muted);
+}
+
+.dealNoResults {
+  padding: calc(12 * var(--width-multiplier)) calc(14 * var(--width-multiplier));
+  font-size: calc(13 * var(--width-multiplier));
+  color: var(--text-muted);
+  text-align: center;
+}

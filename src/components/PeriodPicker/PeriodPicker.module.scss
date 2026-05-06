@@ -1,0 +1,212 @@
+.wrapper {
+  position: relative;
+}
+
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(6 * var(--width-multiplier));
+  padding: calc(7 * var(--width-multiplier)) calc(10 * var(--width-multiplier));
+  border: 0.5px solid var(--border-md);
+  border-radius: var(--radius);
+  font-size: calc(13 * var(--width-multiplier));
+  background: var(--surface);
+  color: var(--text-primary);
+  cursor: pointer;
+  outline: none;
+  white-space: nowrap;
+
+  &:focus { border-color: var(--brand); }
+}
+
+.triggerActive {
+  color: var(--brand);
+  border-color: var(--brand);
+}
+
+.chevron {
+  transition: transform 0.15s ease;
+  flex-shrink: 0;
+}
+.chevronUp { transform: rotate(180deg); }
+
+// ─── Dropdown ────────────────────────────────────────────────
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + calc(4 * var(--width-multiplier)));
+  left: 0;
+  z-index: 400;
+  display: flex;
+  background: var(--surface);
+  border: 0.5px solid var(--border-md);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+}
+
+// ─── Options list ────────────────────────────────────────────
+
+.options {
+  padding: calc(8 * var(--width-multiplier));
+  min-width: calc(170 * var(--width-multiplier));
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: calc(10 * var(--width-multiplier));
+  padding: calc(9 * var(--width-multiplier)) calc(10 * var(--width-multiplier));
+  border-radius: calc(6 * var(--width-multiplier));
+  font-size: calc(13 * var(--width-multiplier));
+  color: var(--text-primary);
+  cursor: pointer;
+  user-select: none;
+
+  &:hover { background: var(--surface-2); }
+}
+
+.optionActive {
+  color: var(--brand);
+}
+
+.radio {
+  flex-shrink: 0;
+  width: calc(16 * var(--width-multiplier));
+  height: calc(16 * var(--width-multiplier));
+  border-radius: 50%;
+  border: 1.5px solid var(--border-md);
+}
+
+.radioOn {
+  border-color: var(--brand);
+  background: var(--brand);
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: calc(6 * var(--width-multiplier));
+    height: calc(6 * var(--width-multiplier));
+    border-radius: 50%;
+    background: #fff;
+  }
+}
+
+// ─── Calendar ────────────────────────────────────────────────
+
+.calendar {
+  padding: calc(14 * var(--width-multiplier));
+  border-left: 0.5px solid var(--border);
+  width: calc(260 * var(--width-multiplier));
+}
+
+.calHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: calc(10 * var(--width-multiplier));
+}
+
+.calTitle {
+  font-size: calc(13 * var(--width-multiplier));
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.calNav {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: calc(18 * var(--width-multiplier));
+  color: var(--text-secondary);
+  width: calc(28 * var(--width-multiplier));
+  height: calc(28 * var(--width-multiplier));
+  border-radius: calc(6 * var(--width-multiplier));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+
+  &:hover { background: var(--surface-2); }
+}
+
+.calGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  row-gap: calc(2 * var(--width-multiplier));
+}
+
+.dayName {
+  text-align: center;
+  font-size: calc(11 * var(--width-multiplier));
+  color: var(--text-muted);
+  padding: calc(4 * var(--width-multiplier)) 0 calc(6 * var(--width-multiplier));
+}
+
+// ─── Day cells ───────────────────────────────────────────────
+
+.dayCell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: calc(2 * var(--width-multiplier)) 0;
+    background: transparent;
+    pointer-events: none;
+  }
+
+  &.cellRange::before {
+    background: var(--brand-light);
+  }
+
+  &.cellStart::before {
+    left: 50%;
+    background: var(--brand-light);
+  }
+
+  &.cellEnd::before {
+    right: 50%;
+    background: var(--brand-light);
+  }
+}
+
+.day {
+  position: relative;
+  z-index: 1;
+  width: calc(30 * var(--width-multiplier));
+  height: calc(30 * var(--width-multiplier));
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  font-size: calc(12 * var(--width-multiplier));
+  color: var(--text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background: var(--brand-light);
+    color: var(--brand);
+  }
+}
+
+.daySelected {
+  background: var(--brand) !important;
+  color: #fff !important;
+  font-weight: 500;
+}
+
+.dayToday {
+  color: var(--brand);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: calc(2 * var(--width-multiplier));
+}

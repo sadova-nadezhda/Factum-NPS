@@ -1,0 +1,179 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 100;
+  backdrop-filter: blur(2px);
+}
+
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 101;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  border: 0.5px solid var(--border);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.12);
+  width: calc(520 * var(--width-multiplier));
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+
+  @media (max-width: 767px) {
+    width: calc(100vw - 32px);
+    max-height: 85vh;
+    top: auto;
+    bottom: 16px;
+    transform: translateX(-50%);
+    border-radius: calc(16 * var(--width-multiplier));
+  }
+}
+
+// ─── Header ──────────────────────────────────────────────────
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: calc(12 * var(--width-multiplier));
+  padding: calc(20 * var(--width-multiplier)) calc(24 * var(--width-multiplier));
+  border-bottom: 0.5px solid var(--border);
+}
+
+.headerLeft {
+  display: flex;
+  flex-direction: column;
+  gap: calc(6 * var(--width-multiplier));
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: calc(10 * var(--width-multiplier));
+  flex-shrink: 0;
+}
+
+.title {
+  font-size: calc(16 * var(--width-multiplier));
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: calc(24 * var(--width-multiplier));
+  line-height: 1;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+// ─── Body ────────────────────────────────────────────────────
+
+.body {
+  padding: calc(20 * var(--width-multiplier)) calc(24 * var(--width-multiplier));
+  flex: 1;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: calc(10 * var(--width-multiplier));
+  margin-bottom: calc(4 * var(--width-multiplier));
+}
+
+.fieldRow {
+  display: flex;
+  align-items: baseline;
+  gap: calc(12 * var(--width-multiplier));
+}
+
+.fieldLabel {
+  font-size: calc(12 * var(--width-multiplier));
+  color: var(--text-muted);
+  min-width: calc(90 * var(--width-multiplier));
+  flex-shrink: 0;
+}
+
+.fieldValue {
+  font-size: calc(13 * var(--width-multiplier));
+  color: var(--text-primary);
+}
+
+.fieldMuted {
+  font-size: calc(12 * var(--width-multiplier));
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.phoneLink {
+  color: var(--brand);
+  text-decoration: none;
+  font-size: calc(13 * var(--width-multiplier));
+
+  &:hover { text-decoration: underline; }
+}
+
+.divider {
+  height: 0.5px;
+  background: var(--border);
+  margin: calc(16 * var(--width-multiplier)) 0;
+}
+
+.section {
+  margin-bottom: calc(16 * var(--width-multiplier));
+}
+
+.sectionLabel {
+  font-size: calc(11 * var(--width-multiplier));
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: calc(10 * var(--width-multiplier));
+}
+
+.scoreHint {
+  margin-top: calc(10 * var(--width-multiplier));
+  font-size: calc(12 * var(--width-multiplier));
+  color: var(--text-secondary);
+  padding: calc(6 * var(--width-multiplier)) calc(10 * var(--width-multiplier));
+  background: var(--surface-2);
+  border-radius: calc(8 * var(--width-multiplier));
+}
+
+.textarea {
+  resize: none;
+  height: calc(80 * var(--width-multiplier));
+  width: 100%;
+  padding: calc(10 * var(--width-multiplier)) calc(12 * var(--width-multiplier));
+  border: 0.5px solid var(--border-md);
+  border-radius: var(--radius);
+  font-size: calc(13 * var(--width-multiplier));
+  color: var(--text-primary);
+  background: var(--surface-2);
+  outline: none;
+  box-sizing: border-box;
+
+  &::placeholder { color: var(--text-muted); }
+  &:focus { border-color: var(--brand); }
+}
+
+// ─── Footer ──────────────────────────────────────────────────
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: calc(12 * var(--width-multiplier));
+  padding: calc(16 * var(--width-multiplier)) calc(24 * var(--width-multiplier));
+  border-top: 0.5px solid var(--border);
+  background: var(--surface);
+}

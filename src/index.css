@@ -1,0 +1,105 @@
+﻿*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  /* ── Адаптация ─────────────────────────────────────────────── */
+  --width-base: 1920;
+  --width-current: 100vw;
+  --width-multiplier: var(--width-current) / var(--width-base);
+
+  /* ── Брендовые цвета ───────────────────────────────────────── */
+  --primary: #DD5500;
+  --primary-hover: #CB4E00;
+  --primary-light: #FEF0E8;
+  --brand: var(--primary);
+  --brand-light: var(--primary-light);
+
+  /* ── Фоны ──────────────────────────────────────────────────── */
+  --bg: #F5F5F5;
+  --surface: #FFFFFF;
+  --surface-2: #FAFAFA;
+
+  /* ── Бордеры ───────────────────────────────────────────────── */
+  --border: rgba(0, 0, 0, 0.08);
+  --border-md: rgba(0, 0, 0, 0.15);
+
+
+  /* ── Таблица ───────────────────────────────────────────────── */
+  --surface-table-head: #E0E0E0;
+
+  /* ── Текст ─────────────────────────────────────────────────── */
+  --white: #FFFFFF;
+  --text-primary: #111111;
+  --text-secondary: #666666;
+  --text-muted: #999999;
+
+  /* ── Семантические цвета ───────────────────────────────────── */
+  --red: #EF4444;
+  --red-bg: #FEF2F2;
+  --green: #22C55E;
+  --green-bg: #F0FDF4;
+  --amber: #F59E0B;
+  --amber-bg: #FFFBEB;
+  --blue: #3B82F6;
+  --blue-bg: #DBEAFE;
+
+  /* ── Радиусы ───────────────────────────────────────────────── */
+  --radius-sm: calc(4 * var(--width-multiplier));
+  --radius: calc(8 * var(--width-multiplier));
+  --radius-lg: calc(12 * var(--width-multiplier));
+
+  /* ── Тени ──────────────────────────────────────────────────── */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+@media (max-width: 1440px) {
+  :root {
+    --width-base: 1440;
+    --width-current: 100vmin;
+  }
+}
+
+@media (max-width: 1024px) {
+  :root {
+    --width-base: 1100;
+    --width-current: 100vmin;
+  }
+}
+
+@media (max-width: 767px) {
+  :root {
+    --width-base: 375;
+    --width-current: 100vmin;
+  }
+}
+
+body {
+  font-family: "Onest", sans-serif;
+  font-size: calc(16 * var(--width-multiplier));
+  background: var(--bg);
+  color: var(--text-primary);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+.container {
+  width: calc(100% - calc(40 * var(--width-multiplier)));
+  margin: 0 auto;
+  max-width: calc(1440 * var(--width-multiplier));
+
+  @media (max-width: 1024px) {
+    max-width: unset;
+    width: calc(100% - calc(16 * var(--width-multiplier)));
+  }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: calc(6 * var(--width-multiplier)); height: calc(6 * var(--width-multiplier)); }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-md); border-radius: calc(3 * var(--width-multiplier)); }
+
+/* Transitions */
+button, input, select, textarea { 
+  font: inherit;
+  transition: all 0.3s ease-out; 
+}

@@ -1,0 +1,327 @@
+﻿.page {
+  padding: calc(32 * var(--width-multiplier)) 0;
+}
+
+// ─── Empty / Loading states ───────────────────────────────────
+.emptyCard {
+  padding: calc(24 * var(--width-multiplier));
+  text-align: center;
+}
+
+.emptyIcon {
+  font-size: calc(32 * var(--width-multiplier));
+  margin-bottom: calc(12 * var(--width-multiplier));
+}
+
+.emptyTitle {
+  font-weight: 500;
+  margin-bottom: calc(6 * var(--width-multiplier));
+}
+
+.emptyDesc {
+  font-size: calc(14 * var(--width-multiplier));
+  color: var(--text-secondary);
+}
+
+.emptyActions {
+  margin-top: calc(20 * var(--width-multiplier));
+  display: flex;
+  justify-content: center;
+  gap: calc(8 * var(--width-multiplier));
+}
+
+// ─── Two-column layout ────────────────────────────────────────
+.layout {
+  display: grid;
+  grid-template-columns: 1fr calc(375 * var(--width-multiplier));
+  gap: calc(16 * var(--width-multiplier));
+  align-items: start;
+
+  @media (max-width: 767px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ─── Queue list ───────────────────────────────────────────────
+.queueHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: calc(12 * var(--width-multiplier));
+  padding: calc(16 * var(--width-multiplier));
+  border-bottom: 0.5px solid var(--border);
+}
+
+.queueTitle {
+  font-weight: 500;
+}
+
+.queueSubtitle {
+  margin-top: calc(4 * var(--width-multiplier));
+  color: var(--text-secondary);
+  font-size: calc(14 * var(--width-multiplier));
+}
+
+.queueBadge {
+  padding: calc(2 * var(--width-multiplier)) calc(8 * var(--width-multiplier));
+  border-radius: calc(20 * var(--width-multiplier));
+  background: var(--brand-light);
+  color: var(--brand);
+  font-size: calc(12 * var(--width-multiplier));
+  white-space: nowrap;
+}
+
+.queueItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: calc(16 * var(--width-multiplier));
+  padding: calc(16 * var(--width-multiplier));
+  border-bottom: 0.5px solid var(--border);
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  transition: background 0.1s;
+
+  &:last-of-type {
+    border-bottom: none;
+  }
+
+  &:not(.active):hover {
+    background: var(--surface-2);
+  }
+
+  &.active {
+    background: var(--brand-light);
+    border-left-color: var(--brand);
+  }
+}
+
+.itemTitle {
+  margin-bottom: calc(4 * var(--width-multiplier));
+  font-weight: 500;
+}
+
+.itemClient {
+  margin-bottom: calc(4 * var(--width-multiplier));
+  color: var(--text-secondary);
+  font-size: calc(14 * var(--width-multiplier));
+}
+
+.itemMeta {
+  color: var(--text-muted);
+  font-size: calc(12 * var(--width-multiplier));
+}
+
+.itemPhone {
+  margin-top: calc(2 * var(--width-multiplier));
+  color: var(--blue);
+  font-size: calc(12 * var(--width-multiplier));
+}
+
+.itemBadge {
+  padding: calc(2 * var(--width-multiplier)) calc(8 * var(--width-multiplier));
+  border-radius: calc(20 * var(--width-multiplier));
+  font-size: calc(12 * var(--width-multiplier));
+  font-weight: 500;
+  white-space: nowrap;
+
+  &.unavailable {
+    background: var(--red-bg);
+    color: var(--red);
+  }
+
+  &.waiting {
+    background: var(--amber-bg);
+    color: var(--amber);
+  }
+
+  &.not_called {
+    background: var(--surface-2);
+    color: var(--text-secondary);
+  }
+}
+
+.queueFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: calc(16 * var(--width-multiplier));
+  padding: calc(16 * var(--width-multiplier));
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.footerInfo {
+  color: var(--text-secondary);
+  font-size: calc(14 * var(--width-multiplier));
+}
+
+.footerActions {
+  display: flex;
+  align-items: center;
+  gap: calc(8 * var(--width-multiplier));
+}
+
+.paginationBtn {
+  padding: calc(8 * var(--width-multiplier)) calc(12 * var(--width-multiplier));
+  border-radius: calc(8 * var(--width-multiplier));
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-primary);
+  font-size: calc(14 * var(--width-multiplier));
+  cursor: pointer;
+
+  &:disabled {
+    background: var(--surface-2);
+    color: var(--text-muted);
+    cursor: not-allowed;
+  }
+}
+
+// ─── Sidebar ──────────────────────────────────────────────────
+.sidebarWrapper {
+  align-self: stretch;
+
+  @media (max-width: 767px) {
+    align-self: auto;
+  }
+}
+
+.sidebar {
+  position: sticky;
+  top: calc(130 * var(--width-multiplier));
+
+  @media (max-width: 767px) {
+    position: static;
+    top: auto;
+  }
+  display: flex;
+  flex-direction: column;
+  gap: calc(16 * var(--width-multiplier));
+  padding: calc(24 * var(--width-multiplier));
+}
+
+.sidebarLabel {
+  margin-bottom: calc(10 * var(--width-multiplier));
+  color: var(--text-primary);
+  font-size: calc(14 * var(--width-multiplier));
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.fieldRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: calc(12 * var(--width-multiplier));
+  margin-bottom: calc(8 * var(--width-multiplier));
+  font-size: calc(14 * var(--width-multiplier));
+}
+
+.fieldLabel {
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.fieldValue {
+  text-align: right;
+}
+
+.fieldValueBold {
+  font-weight: 500;
+  text-align: right;
+}
+
+.fieldValueMono {
+  font-family: monospace;
+  text-align: right;
+}
+
+.fieldValueLink {
+  color: var(--blue);
+  text-align: right;
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+}
+
+.scoreHint {
+  margin-top: calc(10 * var(--width-multiplier));
+  padding: calc(8 * var(--width-multiplier)) calc(12 * var(--width-multiplier));
+  color: var(--text-secondary);
+  background: var(--surface-2);
+  border-radius: calc(4 * var(--width-multiplier));
+  font-size: calc(14 * var(--width-multiplier));
+}
+
+.textarea {
+  resize: none;
+  height: calc(90 * var(--width-multiplier));
+  width: 100%;
+  padding: calc(12 * var(--width-multiplier));
+  border: 0.5px solid var(--border-md);
+  border-radius: calc(8 * var(--width-multiplier));
+  color: var(--text-primary);
+  background: var(--surface-2);
+  font-size: calc(14 * var(--width-multiplier));
+  outline: none;
+}
+
+.actions {
+  display: flex;
+  gap: calc(8 * var(--width-multiplier));
+}
+
+.btnNoDial {
+  flex: 1;
+  padding: calc(12 * var(--width-multiplier));
+  border-radius: var(--radius);
+  border: 0.5px solid var(--border-md);
+  color: var(--text-secondary);
+  background: transparent;
+  font-size: calc(12 * var(--width-multiplier));
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.btnSave {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(8 * var(--width-multiplier));
+  padding: calc(12 * var(--width-multiplier));
+  border-radius: var(--radius);
+  border: none;
+  color: #fff;
+  background: var(--brand);
+  font-size: calc(12 * var(--width-multiplier));
+  font-weight: 500;
+  cursor: pointer;
+
+  svg {
+    width: calc(12 * var(--width-multiplier));
+    height: calc(12 * var(--width-multiplier));
+    pointer-events: none;
+  }
+
+  &:disabled {
+    opacity: 0.7;
+  }
+}
+
+// ─── Empty sidebar placeholder ────────────────────────────────
+.emptySelect {
+  padding: calc(24 * var(--width-multiplier));
+  color: var(--text-secondary);
+  font-size: calc(14 * var(--width-multiplier));
+  text-align: center;
+}
+
+.emptySelectIcon {
+  font-size: calc(24 * var(--width-multiplier));
+  margin-bottom: calc(10 * var(--width-multiplier));
+}
