@@ -80,6 +80,9 @@
 .body {
   padding: calc(20 * var(--width-multiplier)) calc(24 * var(--width-multiplier));
   flex: 1;
+  @media (max-width: 767px) {
+    padding: calc(16 * var(--width-multiplier));
+  }
 }
 
 .info {
@@ -129,6 +132,9 @@
 
 .section {
   margin-bottom: calc(16 * var(--width-multiplier));
+  &:last-child {
+    margin-bottom: 0;
+  }
 }
 
 .sectionLabel {
@@ -176,4 +182,16 @@
   padding: calc(16 * var(--width-multiplier)) calc(24 * var(--width-multiplier));
   border-top: 0.5px solid var(--border);
   background: var(--surface);
+  @media (max-width: 767px) {
+    gap: calc(8 * var(--width-multiplier));
+    padding: calc(16 * var(--width-multiplier));
+  }
+}
+
+.footer button {
+  @media (max-width: 767px) {
+    flex-grow: 1;
+    justify-content: center;
+    text-align: center;
+  }
 }

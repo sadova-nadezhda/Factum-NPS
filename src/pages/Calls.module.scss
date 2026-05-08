@@ -1,5 +1,8 @@
 ﻿.page {
   padding: calc(32 * var(--width-multiplier)) 0;
+  @media (max-width: 767px) {
+    padding: calc(24 * var(--width-multiplier)) 0 88px;
+  }
 }
 
 // ─── Empty / Loading states ───────────────────────────────────
@@ -118,28 +121,6 @@
   font-size: calc(12 * var(--width-multiplier));
 }
 
-.itemBadge {
-  padding: calc(2 * var(--width-multiplier)) calc(8 * var(--width-multiplier));
-  border-radius: calc(20 * var(--width-multiplier));
-  font-size: calc(12 * var(--width-multiplier));
-  font-weight: 500;
-  white-space: nowrap;
-
-  &.unavailable {
-    background: var(--red-bg);
-    color: var(--red);
-  }
-
-  &.waiting {
-    background: var(--amber-bg);
-    color: var(--amber);
-  }
-
-  &.not_called {
-    background: var(--surface-2);
-    color: var(--text-secondary);
-  }
-}
 
 .queueFooter {
   display: flex;
@@ -184,21 +165,129 @@
 
   @media (max-width: 767px) {
     align-self: auto;
+    display: none;
+
+    &.mobileVisible {
+      display: block;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      transform: translateY(calc(100% - 68px));
+      transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+    }
+
+    &.expanded {
+      transform: translateY(0);
+    }
   }
 }
 
 .sidebar {
   position: sticky;
   top: calc(130 * var(--width-multiplier));
-
-  @media (max-width: 767px) {
-    position: static;
-    top: auto;
-  }
   display: flex;
   flex-direction: column;
   gap: calc(16 * var(--width-multiplier));
   padding: calc(24 * var(--width-multiplier));
+  @media (max-width: 767px) {
+    position: static;
+    top: auto;
+    border-radius: calc(16 * var(--width-multiplier)) calc(16 * var(--width-multiplier)) 0 0 !important;
+    max-height: 85dvh;
+    overflow-y: auto;
+    padding: 0;
+  }
+}
+
+.sidebarBody {
+  display: flex;
+  flex-direction: column;
+  gap: calc(16 * var(--width-multiplier));
+
+  @media (max-width: 767px) {
+    padding: calc(16 * var(--width-multiplier)) calc(20 * var(--width-multiplier)) calc(24 * var(--width-multiplier));
+  }
+}
+
+// ─── Mobile bottom sheet handle ──────────────────────────────
+.sheetHandle {
+  display: none;
+
+  @media (max-width: 767px) {
+    display: flex;
+    align-items: center;
+    gap: calc(12 * var(--width-multiplier));
+    padding: 0 calc(20 * var(--width-multiplier));
+    height: 68px;
+    flex-shrink: 0;
+    cursor: pointer;
+    user-select: none;
+    border-bottom: 0.5px solid var(--border);
+    position: relative;
+  }
+}
+
+.handlePill {
+  @media (max-width: 767px) {
+    width: 36px;
+    height: 4px;
+    background: var(--border-md);
+    border-radius: 2px;
+    position: absolute;
+    top: calc(10 * var(--width-multiplier));
+    left: 50%;
+    transform: translateX(-50%);
+    pointer-events: none;
+  }
+}
+
+.handleInfo {
+  flex: 1;
+  min-width: 0;
+  margin-top: calc(8 * var(--width-multiplier));
+}
+
+.handleName {
+  font-weight: 500;
+  font-size: calc(14 * var(--width-multiplier));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.handleSub {
+  color: var(--text-secondary);
+  font-size: calc(12 * var(--width-multiplier));
+  margin-top: calc(2 * var(--width-multiplier));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.handleChevron {
+  color: var(--text-secondary);
+  flex-shrink: 0;
+  margin-top: calc(8 * var(--width-multiplier));
+  transition: transform 0.2s ease;
+
+  &.chevronUp {
+    transform: rotate(180deg);
+  }
+}
+
+// ─── Backdrop ────────────────────────────────────────────────
+.backdrop {
+  display: none;
+
+  @media (max-width: 767px) {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 99;
+  }
 }
 
 .sidebarLabel {
@@ -208,6 +297,9 @@
   font-weight: 500;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+  @media (max-width: 767px) {
+    font-size: calc(12 * var(--width-multiplier));
+  }
 }
 
 .fieldRow {
@@ -246,6 +338,32 @@
     color: inherit;
     text-decoration: none;
   }
+}
+
+// ─── Previous score/comment block ───────────────────────────
+.prevBlock {
+  padding: calc(12 * var(--width-multiplier));
+  border-radius: calc(8 * var(--width-multiplier));
+  background: var(--surface-2);
+  border: 0.5px solid var(--border);
+}
+
+.prevScore {
+  display: flex;
+  align-items: center;
+  gap: calc(8 * var(--width-multiplier));
+}
+
+.prevScoreHint {
+  color: var(--text-secondary);
+  font-size: calc(13 * var(--width-multiplier));
+}
+
+.prevComment {
+  color: var(--text-secondary);
+  font-size: calc(13 * var(--width-multiplier));
+  line-height: 1.5;
+  white-space: pre-wrap;
 }
 
 .scoreHint {

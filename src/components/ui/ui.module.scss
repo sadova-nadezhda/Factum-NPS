@@ -2,9 +2,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  width: calc(32 * var(--width-multiplier));
+  height: calc(32 * var(--width-multiplier));
   border-radius: 50%;
+  font-size: calc(12 * var(--width-multiplier));
   font-weight: 500;
   flex-shrink: 0;
+  @media (max-width: 767px) {
+    width: calc(24 * var(--width-multiplier));
+    height: calc(24 * var(--width-multiplier));
+    font-size: calc(10 * var(--width-multiplier));
+  }
 }
 
 .scoreSelector {
@@ -74,6 +82,11 @@
   font-weight: 500;
   cursor: pointer;
   border: none;
+  @media (max-width: 767px) {
+    gap: calc(6 * var(--width-multiplier));
+    padding: calc(8 * var(--width-multiplier)) calc(14 * var(--width-multiplier));
+    font-size: calc(14 * var(--width-multiplier));
+  }
 }
 
 .primary   { background: var(--brand); color: #fff; }
@@ -91,12 +104,15 @@
 }
 
 .statusBadge {
-  display: inline-flex;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: calc(2 * var(--width-multiplier)) calc(8 * var(--width-multiplier));
   border-radius: calc(100 * var(--width-multiplier));
   border: 0.5px solid transparent;
   font-size: calc(12 * var(--width-multiplier));
   white-space: nowrap;
+  text-align: center;
 }
 
 .serviceTag {

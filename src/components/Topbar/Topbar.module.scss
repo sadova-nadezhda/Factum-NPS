@@ -94,6 +94,8 @@
   }
 
   .left {
+    flex-direction: column;
+    align-items: flex-start;
     gap: calc(16 * var(--width-multiplier));
   }
 
@@ -138,4 +140,9 @@
   font-weight: 500;
   line-height: 1;
   text-align: center;
+  @media (max-width: 767px) {
+    top: calc(-12 * var(--width-multiplier));
+    right: calc(-24 * var(--width-multiplier));
+    line-height: 1px;
+  }
 }

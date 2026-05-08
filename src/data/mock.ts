@@ -41,10 +41,10 @@ export const MOCK_RECORDS: NpsRecord[] = [
     company: 'Beta Media',
     client: 'Алексей',
     phone: '+7 702 333 44 55',
-    score: null,
+    score: 7,
     status: 'waiting',
     called: false,
-    comment: '',
+    comment: 'Немного затянули сроки, но результатом доволен',
   },
   {
     id: '4',

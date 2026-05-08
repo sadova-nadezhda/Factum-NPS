@@ -31,7 +31,7 @@ export function RecordFilters({
   hasFilters, onClearFilters,
 }: Props) {
   return (
-    <Card style={{ padding: 'calc(20 * var(--width-multiplier, 1))', marginBottom: 'calc(16 * var(--width-multiplier, 1))' }}>
+    <Card className={s.filterCard}>
       <div className={s.searchWrap}>
         <svg className={s.searchIcon} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />

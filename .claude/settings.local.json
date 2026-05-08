@@ -1,7 +1,21 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx tsc *)"
+      "Bash(npx tsc *)",
+      "Skill(claude-api)",
+      "Skill(claude-api:*)",
+      "Bash(New-Item -ItemType Directory -Force -Path \"D:\\\\hope\\\\documents\\\\GitHub\\\\Factum-ChatScanner\\\\src\\\\types\")",
+      "Bash(Out-Null)",
+      "Bash(New-Item -ItemType Directory -Force -Path \"D:\\\\hope\\\\documents\\\\GitHub\\\\Factum-ChatScanner\\\\src\\\\services\")",
+      "Bash(New-Item -ItemType Directory -Force -Path \"D:\\\\hope\\\\documents\\\\GitHub\\\\Factum-ChatScanner\\\\src\\\\hooks\")",
+      "Bash(New-Item -ItemType Directory -Force -Path \"D:\\\\hope\\\\documents\\\\GitHub\\\\Factum-ChatScanner\\\\src\\\\data\")",
+      "Bash(New-Item -ItemType Directory -Force -Path \"D:\\\\hope\\\\documents\\\\GitHub\\\\Factum-ChatScanner\\\\src\\\\pages\")",
+      "Bash(New-Item -ItemType Directory -Force -Path \"D:\\\\hope\\\\documents\\\\GitHub\\\\Factum-ChatScanner\\\\src\\\\components\\\\ui\")",
+      "Bash(New-Item -ItemType Directory -Force -Path \"D:\\\\hope\\\\documents\\\\GitHub\\\\Factum-ChatScanner\\\\src\\\\components\\\\Topbar\")",
+      "Bash(New-Item -ItemType Directory -Force -Path \"D:\\\\hope\\\\documents\\\\GitHub\\\\Factum-ChatScanner\\\\src\\\\components\\\\ChatList\")",
+      "Bash(New-Item -ItemType Directory -Force -Path \"D:\\\\hope\\\\documents\\\\GitHub\\\\Factum-ChatScanner\\\\src\\\\components\\\\ChatDetail\")",
+      "Bash(New-Item -ItemType Directory -Force -Path \"D:\\\\hope\\\\documents\\\\GitHub\\\\Factum-ChatScanner\\\\src\\\\components\\\\UploadModal\")",
+      "Bash(Write-Host \"Directories created\")"
     ]
   }
 }

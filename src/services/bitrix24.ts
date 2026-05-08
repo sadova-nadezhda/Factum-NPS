@@ -4,9 +4,17 @@ import type { NpsRecord, BitrixPage, RecordStatus } from '../types'
 const BITRIX_STATUS_FIELD = 'UF_CRM_NPS_STATUS' as const
 
 const BITRIX_STATUS_MAP: Record<string, RecordStatus> = {
-  'Получено':   'received',
-  'Ожидание':   'waiting',
-  'Недоступен': 'unavailable',
+  '1036': 'received',
+  '1038': 'waiting',
+  '1040': 'not_called',
+  '1042': 'unavailable',
+}
+
+const STATUS_TO_BITRIX: Record<string, string> = {
+  received:    '1036',
+  waiting:     '1038',
+  not_called:  '1040',
+  unavailable: '1042',
 }
 
 function mapBitrixStatus(raw: string | null | undefined): RecordStatus {
@@ -220,7 +228,8 @@ export const bitrix24 = {
   async sendNpsToDeal(
     dealId: string,
     score: number | null,
-    comment = ''
+    comment = '',
+    status = 'received'
   ): Promise<{ ok: boolean; error?: unknown }> {
     if (!WEBHOOK) {
       console.info('[Bitrix24] Мок: NPS', score, 'для сделки', dealId)
@@ -230,12 +239,13 @@ export const bitrix24 = {
     const id = String(dealId).replace(/^B24-/i, '')
     const scoreMaps = await fetchScoreMaps()
     const scoreListId = score !== null ? (scoreMaps.scoreToId.get(score) ?? score) : null
+    const bitrixStatus = STATUS_TO_BITRIX[status] ?? 'Ожидание'
 
     try {
       await fetch(`${WEBHOOK}/crm.deal.update.json`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, fields: { UF_CRM_1737637647: scoreListId, UF_CRM_NPS_COMMENT: comment } }),
+        body: JSON.stringify({ id, fields: { UF_CRM_1737637647: scoreListId, UF_CRM_NPS_SCORE: score, UF_CRM_NPS_COMMENT: comment, [BITRIX_STATUS_FIELD]: bitrixStatus } }),
       })
 
       await fetch(`${WEBHOOK}/crm.timeline.comment.add.json`, {
@@ -254,6 +264,25 @@ export const bitrix24 = {
     } catch (err) {
       console.error('[Bitrix24] Ошибка отправки NPS:', err)
       return { ok: false, error: err }
+    }
+  },
+
+  async sendStatusToDeal(dealId: string, status: string): Promise<{ ok: boolean }> {
+    if (!WEBHOOK) return { ok: true }
+
+    const id = String(dealId).replace(/^B24-/i, '')
+    const bitrixStatus = STATUS_TO_BITRIX[status] ?? 'Ожидание'
+
+    try {
+      await fetch(`${WEBHOOK}/crm.deal.update.json`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, fields: { [BITRIX_STATUS_FIELD]: bitrixStatus } }),
+      })
+      return { ok: true }
+    } catch (err) {
+      console.error('[Bitrix24] Ошибка обновления статуса:', err)
+      return { ok: false }
     }
   },
 }

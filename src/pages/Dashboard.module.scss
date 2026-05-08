@@ -1,5 +1,8 @@
 ﻿.page {
   padding: calc(32 * var(--width-multiplier)) 0;
+  @media (max-width: 767px) {
+    padding: calc(24 * var(--width-multiplier)) 0;
+  }
 }
 
 // ─── Stat cards ──────────────────────────────────────────────
@@ -12,6 +15,13 @@
 
   @media (max-width: 767px) {
     grid-template-columns: 1fr;
+  }
+}
+
+.statsCard {
+  padding: calc(20 * var(--width-multiplier, 1));
+  @media (max-width: 767px) {
+    padding: calc(16 * var(--width-multiplier, 1));
   }
 }
 
@@ -94,40 +104,39 @@
   flex-wrap: wrap;
 }
 
-.statBadgeGreen {
+.statBadge {
   display: inline-flex;
   align-items: center;
   gap: calc(6 * var(--width-multiplier));
   padding: calc(8 * var(--width-multiplier)) calc(10 * var(--width-multiplier));
+  border-radius: calc(8 * var(--width-multiplier));
+  font-size: calc(12 * var(--width-multiplier));
+  @media (max-width: 767px) {
+    gap: calc(4 * var(--width-multiplier));
+    padding: calc(4 * var(--width-multiplier)) calc(8 * var(--width-multiplier));
+    font-size: calc(11 * var(--width-multiplier));
+  }
+}
+
+.statBadgeGreen {
+  composes: statBadge;
   background: var(--green-bg);
   color: var(--green);
   border: 0.5px solid var(--green);
-  border-radius: calc(8 * var(--width-multiplier));
-  font-size: calc(12 * var(--width-multiplier));
 }
 
 .statBadgeAmber {
-  display: inline-flex;
-  align-items: center;
-  gap: calc(6 * var(--width-multiplier));
-  padding: calc(8 * var(--width-multiplier)) calc(10 * var(--width-multiplier));
+  composes: statBadge;
   background: var(--amber-bg);
   color: var(--amber);
   border: 0.5px solid var(--amber);
-  border-radius: calc(8 * var(--width-multiplier));
-  font-size: calc(12 * var(--width-multiplier));
 }
 
 .statBadgeRed {
-  display: inline-flex;
-  align-items: center;
-  gap: calc(6 * var(--width-multiplier));
-  padding: calc(8 * var(--width-multiplier)) calc(10 * var(--width-multiplier));
+  composes: statBadge;
   background: var(--red-bg);
   color: var(--red);
   border: 0.5px solid var(--red);
-  border-radius: calc(8 * var(--width-multiplier));
-  font-size: calc(12 * var(--width-multiplier));
 }
 
 // ─── Sortable columns ────────────────────────────────────────
@@ -147,8 +156,15 @@
 }
 
 .sortIcon {
-  font-size: calc(11 * var(--width-multiplier));
-  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sortIcon svg {
+  width: calc(16 * var(--width-multiplier));
+  height: calc(16 * var(--width-multiplier));
+  pointer-events: none;
 }
 
 .table {
@@ -167,6 +183,13 @@
   color: var(--text-secondary);
   border-bottom: 1px solid var(--border);
   white-space: nowrap;
+  @media (max-width: 767px) {
+    padding: calc(8 * var(--width-multiplier));
+  }
+}
+
+.th:nth-child(6), .th:nth-child(7) {
+  text-align: center;
 }
 
 .row {
@@ -190,6 +213,13 @@
   padding: calc(16 * var(--width-multiplier));
   color: var(--text-secondary);
   font-size: calc(14 * var(--width-multiplier));
+  @media (max-width: 767px) {
+    padding: calc(8 * var(--width-multiplier));
+  }
+}
+
+.td:nth-child(6) div, .td:nth-child(6) span, .td:nth-child(7) div, .td:nth-child(7) span {
+  margin: 0 auto;
 }
 
 .tdMuted {
@@ -201,17 +231,30 @@
   color: var(--text-primary);
   font-size: calc(14 * var(--width-multiplier));
   font-weight: 500;
+  @media (max-width: 767px) {
+    padding: calc(8 * var(--width-multiplier));
+  }
 }
 
 .placeholder {
   text-align: center;
   padding: calc(24 * var(--width-multiplier));
   color: var(--text-secondary);
+  @media (max-width: 767px) {
+    padding: calc(16 * var(--width-multiplier));
+  }
 }
 
 .tableWrap {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+}
+
+// На мобилке оставляем только Компанию (4), Оценку (6), Статус (7)
+@media (max-width: 767px) {
+  .th:nth-child(1), .th:nth-child(2), .th:nth-child(3), .th:nth-child(5) { display: none; }
+  .td:nth-child(1), .td:nth-child(2), .td:nth-child(3), .td:nth-child(5),
+  .tdBold:nth-child(1), .tdBold:nth-child(2), .tdBold:nth-child(3), .tdBold:nth-child(5) { display: none; }
 }
 
 .footer {
@@ -223,6 +266,10 @@
   border-top: 1px solid var(--border);
   background: var(--surface);
   flex-wrap: wrap;
+  @media (max-width: 767px) {
+    gap: calc(8 * var(--width-multiplier));
+    padding: calc(12 * var(--width-multiplier));
+  }
 }
 
 .footerInfo {
@@ -250,4 +297,113 @@
     color: var(--text-muted);
     cursor: not-allowed;
   }
+}
+
+// ─── Accordion ───────────────────────────────────────────────
+
+.rowExpanded {
+  background: var(--surface-2);
+}
+
+.accordionRow {
+  background: var(--surface-2);
+}
+
+.accordionCell {
+  padding: 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.accordion {
+  padding: calc(20 * var(--width-multiplier)) calc(16 * var(--width-multiplier));
+  display: flex;
+  flex-direction: column;
+  gap: calc(20 * var(--width-multiplier));
+}
+
+.accordionGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: calc(12 * var(--width-multiplier)) calc(24 * var(--width-multiplier));
+
+  @media (max-width: 767px) {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.accordionField {
+  display: flex;
+  flex-direction: column;
+  gap: calc(3 * var(--width-multiplier));
+}
+
+.accordionFieldLabel {
+  font-size: calc(11 * var(--width-multiplier));
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.accordionFieldValue {
+  font-size: calc(14 * var(--width-multiplier));
+  color: var(--text-primary);
+
+  a {
+    color: var(--brand);
+    text-decoration: none;
+    &:hover { text-decoration: underline; }
+  }
+}
+
+.accordionSections {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: calc(24 * var(--width-multiplier));
+
+  @media (max-width: 767px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.accordionSection {
+  display: flex;
+  flex-direction: column;
+  gap: calc(8 * var(--width-multiplier));
+}
+
+.accordionSectionLabel {
+  font-size: calc(11 * var(--width-multiplier));
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.scoreHint {
+  font-size: calc(12 * var(--width-multiplier));
+  color: var(--text-secondary);
+}
+
+.accordionTextarea {
+  width: 100%;
+  min-height: calc(80 * var(--width-multiplier));
+  padding: calc(10 * var(--width-multiplier)) calc(12 * var(--width-multiplier));
+  border: 0.5px solid var(--border-md);
+  border-radius: var(--radius);
+  font-size: calc(14 * var(--width-multiplier));
+  color: var(--text-secondary);
+  background: var(--surface);
+  outline: none;
+  resize: vertical;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.accordionActions {
+  display: flex;
+  gap: calc(12 * var(--width-multiplier));
+  justify-content: flex-end;
+  padding-top: calc(16 * var(--width-multiplier));
+  border-top: 1px solid var(--border);
 }

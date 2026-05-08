@@ -1,5 +1,9 @@
 .wrapper {
   position: relative;
+
+  @media (max-width: 767px) {
+    width: 100%;
+  }
 }
 
 .trigger {
@@ -17,6 +21,11 @@
   white-space: nowrap;
 
   &:focus { border-color: var(--brand); }
+
+  @media (max-width: 767px) {
+    width: 100%;
+    justify-content: space-between;
+  }
 }
 
 .triggerActive {

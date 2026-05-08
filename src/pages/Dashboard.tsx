@@ -1,8 +1,8 @@
 import React, { useState, useMemo, useEffect } from 'react'
-import { ScoreCircle, StatusBadge, ServiceTag, Card } from '../components/ui'
+import { clsx } from 'clsx'
+import { ScoreCircle, StatusBadge, ServiceTag, Card, ScoreSelector, Button } from '../components/ui'
 import type { PeriodFilter } from '../components/PeriodPicker/PeriodPicker'
 import { RecordFilters } from '../components/RecordFilters/RecordFilters'
-import ProjectModal from '../components/ProjectModal/ProjectModal'
 import { useStore, useStats } from '../hooks/store'
 import type { NpsRecord } from '../types'
 import s from './Dashboard.module.scss'
@@ -19,7 +19,7 @@ const SCORE_OPTIONS = [
 ]
 
 export default function Dashboard() {
-  const { records, loading } = useStore()
+  const { records, loading, updateRecord } = useStore()
 
   const [query, setQuery]               = useState('')
   const [period, setPeriod]             = useState<PeriodFilter>({ type: '' })
@@ -28,7 +28,10 @@ export default function Dashboard() {
   const [sortKey, setSortKey]           = useState<SortKey>('date')
   const [sortDir, setSortDir]           = useState<SortDir>('desc')
   const [page, setPage]                 = useState(1)
-  const [selected, setSelected]         = useState<NpsRecord | null>(null)
+  const [expandedId, setExpandedId]     = useState<string | null>(null)
+  const [editScore, setEditScore]       = useState<number | null>(null)
+  const [editComment, setEditComment]   = useState('')
+  const [saving, setSaving]             = useState(false)
 
   const availableServices = useMemo(
     () => [...new Set(records.map(r => r.service).filter(Boolean))],
@@ -123,13 +126,39 @@ export default function Dashboard() {
 
   const npsTotal = stats.low + stats.mid + stats.high || 1
 
+  const handleRowClick = (r: NpsRecord) => {
+    if (expandedId === r.id) {
+      setExpandedId(null)
+    } else {
+      setExpandedId(r.id)
+      setEditScore(r.score)
+      setEditComment(r.comment ?? '')
+    }
+  }
+
+  const handleSave = async (r: NpsRecord) => {
+    setSaving(true)
+    await updateRecord(r.id, {
+      score: editScore,
+      comment: editComment,
+      status: editScore !== null ? 'received' : 'waiting',
+      called: editScore !== null,
+    })
+    setSaving(false)
+    setExpandedId(null)
+  }
+
+  const handleNoDial = async (r: NpsRecord) => {
+    await updateRecord(r.id, { status: 'unavailable', called: true })
+    setExpandedId(null)
+  }
+
   return (
-    <>
     <div className={s.page}>
       <div className='container'>
 
         <div className={s.stats}>
-          <Card style={{ padding: 'calc(20 * var(--width-multiplier, 1))' }}>
+          <Card className={s.statsCard}>
             <div className={s.statLabel}>ОТКЛИК НА ОПРОС</div>
             <div className={s.statValue}>{stats.responseRate}%</div>
             <div className={s.statBarWrap}>
@@ -138,7 +167,7 @@ export default function Dashboard() {
             <div className={s.statMeta}>{stats.responded} из {stats.total} ответили</div>
           </Card>
 
-          <Card style={{ padding: 'calc(20 * var(--width-multiplier, 1))' }}>
+          <Card className={s.statsCard}>
             <div className={s.statLabel}>NPS</div>
             <div className={s.statValue}>{stats.avg}</div>
             <div className={s.npsBarWrap}>
@@ -153,7 +182,7 @@ export default function Dashboard() {
             </div>
           </Card>
 
-          <Card style={{ padding: 'calc(20 * var(--width-multiplier, 1))' }}>
+          <Card className={s.statsCard}>
             <div className={s.statLabel}>В РАБОТЕ</div>
             <div className={s.statValue}>{stats.total}</div>
             <div className={s.statBadges}>
@@ -186,7 +215,7 @@ export default function Dashboard() {
               <tr>
                 <th className={s.th}>
                   <button className={s.sortBtn} onClick={() => toggleSort('date')}>
-                    Дата <span className={s.sortIcon}>{sortKey === 'date' ? (sortDir === 'asc' ? '↑' : '↓') : '↕'}</span>
+                    Дата <span className={s.sortIcon}><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4.66675 2.66663V13.3333" stroke="#666666" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M11.3333 12.6666V2.66663" stroke="#666666" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M6.66675 4.66661C6.66675 4.66661 5.19377 2.66663 4.66673 2.66663C4.13969 2.66662 2.66675 4.66663 2.66675 4.66663" stroke="#666666" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M13.3333 11.3334C13.3333 11.3334 11.8603 13.3334 11.3333 13.3334C10.8062 13.3334 9.33325 11.3334 9.33325 11.3334" stroke="#666666" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg></span>
                   </button>
                 </th>
                 <th className={s.th}>Услуга</th>
@@ -195,7 +224,7 @@ export default function Dashboard() {
                 <th className={s.th}>Клиент</th>
                 <th className={s.th}>
                   <button className={s.sortBtn} onClick={() => toggleSort('score')}>
-                    Оценка <span className={s.sortIcon}>{sortKey === 'score' ? (sortDir === 'asc' ? '↑' : '↓') : '↕'}</span>
+                    Оценка <span className={s.sortIcon}><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4.66675 2.66663V13.3333" stroke="#666666" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M11.3333 12.6666V2.66663" stroke="#666666" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M6.66675 4.66661C6.66675 4.66661 5.19377 2.66663 4.66673 2.66663C4.13969 2.66662 2.66675 4.66663 2.66675 4.66663" stroke="#666666" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M13.3333 11.3334C13.3333 11.3334 11.8603 13.3334 11.3333 13.3334C10.8062 13.3334 9.33325 11.3334 9.33325 11.3334" stroke="#666666" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg></span>
                   </button>
                 </th>
                 <th className={s.th}>Статус</th>
@@ -209,15 +238,80 @@ export default function Dashboard() {
                 <tr><td colSpan={7} className={s.placeholder}>Нет записей</td></tr>
               )}
               {!loading && paginated.map(r => (
-                <tr key={r.id} className={s.rowClickable} onClick={() => setSelected(r)}>
-                  <td className={s.td}>{formatDate(r.date)}</td>
-                  <td className={s.td}><ServiceTag service={r.service} /></td>
-                  <td className={s.td}>{r.specialist || '—'}</td>
-                  <td className={s.tdBold}>{r.company || '—'}</td>
-                  <td className={s.td}>{r.client || '—'}</td>
-                  <td className={s.td}><ScoreCircle score={r.score} /></td>
-                  <td className={s.td}><StatusBadge status={r.status} /></td>
-                </tr>
+                <React.Fragment key={r.id}>
+                  <tr
+                    className={clsx(s.rowClickable, expandedId === r.id && s.rowExpanded)}
+                    onClick={() => handleRowClick(r)}
+                  >
+                    <td className={s.td}>{formatDate(r.date)}</td>
+                    <td className={s.td}><ServiceTag service={r.service} /></td>
+                    <td className={s.td}>{r.specialist || '—'}</td>
+                    <td className={s.tdBold}>{r.company || '—'}</td>
+                    <td className={s.td}>{r.client || '—'}</td>
+                    <td className={s.td}><ScoreCircle score={r.score} /></td>
+                    <td className={s.td}><StatusBadge status={r.status} /></td>
+                  </tr>
+                  {expandedId === r.id && (
+                    <tr className={s.accordionRow}>
+                      <td colSpan={7} className={s.accordionCell} onClick={e => e.stopPropagation()}>
+                        <div className={s.accordion}>
+                          <div className={s.accordionGrid}>
+                            {[
+                              { label: 'Компания',      value: r.company },
+                              { label: 'Клиент',        value: r.client },
+                              { label: 'Телефон',       value: r.phone,      phone: true },
+                              { label: 'Услуга',        value: r.service },
+                              { label: 'Специалист',    value: r.specialist },
+                              { label: 'Дата',          value: formatDate(r.date) },
+                            ].filter(f => f.value).map(f => (
+                              <div key={f.label} className={s.accordionField}>
+                                <span className={s.accordionFieldLabel}>{f.label}</span>
+                                <span className={s.accordionFieldValue}>
+                                  {f.phone && f.value
+                                    ? <a href={`tel:${f.value}`}>{f.value}</a>
+                                    : f.value || '—'}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+
+                          <div className={s.accordionSections}>
+                            <div className={s.accordionSection}>
+                              <div className={s.accordionSectionLabel}>Оценка NPS</div>
+                              <ScoreSelector value={editScore} onChange={setEditScore} />
+                              {editScore !== null && (
+                                <div className={s.scoreHint}>
+                                  {editScore <= 6 && '⚠️ Критик — требует особого внимания'}
+                                  {editScore >= 7 && editScore <= 8 && '😐 Пассив — нейтральная оценка'}
+                                  {editScore >= 9 && '⭐ Промоутер — вероятно порекомендует'}
+                                </div>
+                              )}
+                            </div>
+
+                            <div className={s.accordionSection}>
+                              <div className={s.accordionSectionLabel}>Комментарий</div>
+                              <textarea
+                                className={s.accordionTextarea}
+                                placeholder="Комментарий клиента..."
+                                value={editComment}
+                                onChange={e => setEditComment(e.target.value)}
+                              />
+                            </div>
+                          </div>
+
+                          <div className={s.accordionActions}>
+                            <Button variant="secondary" onClick={() => handleNoDial(r)}>
+                              Не дозвонились
+                            </Button>
+                            <Button variant="primary" onClick={() => handleSave(r)} disabled={saving}>
+                              {saving ? 'Сохранение...' : 'Сохранить'}
+                            </Button>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
               ))}
             </tbody>
           </table>
@@ -238,8 +332,5 @@ export default function Dashboard() {
 
       </div>
     </div>
-
-    <ProjectModal record={selected} onClose={() => setSelected(null)} />
-    </>
   )
 }

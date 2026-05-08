@@ -1,3 +1,16 @@
+.filterCard {
+  display: flex;
+  flex-direction: column;
+  padding: calc(20 * var(--width-multiplier, 1));
+  margin-bottom: calc(16 * var(--width-multiplier, 1));
+  @media (max-width: 767px) {
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+  }
+}
+
 .searchWrap {
   position: relative;
   margin-bottom: calc(12 * var(--width-multiplier));
@@ -31,8 +44,16 @@
 .filterRow {
   display: flex;
   align-items: center;
-  gap: calc(16 * var(--width-multiplier));
+  gap: calc(12 * var(--width-multiplier));
   flex-wrap: wrap;
+  @media (max-width: 767px) {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: calc(12 * var(--width-multiplier));
+    border: 0.5px solid var(--border-md);
+    border-radius: calc(8 * var(--width-multiplier));
+    background-color: #fff;
+  }
 }
 
 .filterLabel {
@@ -40,6 +61,9 @@
   letter-spacing: 0.05em;
   color: var(--text-secondary);
   white-space: nowrap;
+  @media (max-width: 767px) {
+    width: 100%;
+  }
 }
 
 .clearBtn {

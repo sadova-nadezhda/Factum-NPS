@@ -74,13 +74,18 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       const result = await bitrix24.sendNpsToDeal(
         record.bitrixDealId,
         updates.score,
-        updates.comment ?? record.comment ?? ''
+        updates.comment ?? record.comment ?? '',
+        updates.status ?? record.status ?? 'received'
       )
       showToast(result.ok
         ? 'Оценка сохранена и отправлена в Битрикс24'
         : 'Оценка сохранена, но Битрикс24 недоступен'
       )
       return
+    }
+
+    if (updates.status && record?.bitrixDealId) {
+      await bitrix24.sendStatusToDeal(record.bitrixDealId, updates.status)
     }
 
     showToast('Сохранено')

@@ -4,16 +4,7 @@ import type { RecordStatus } from '../../types'
 import styles from './ui.module.scss'
 
 // ─── Score Circle ────────────────────────────────────────────
-interface ScoreCircleProps {
-  score: number | null
-  size?: 'sm' | 'md'
-}
-
-export function ScoreCircle({ score, size = 'md' }: ScoreCircleProps) {
-  const m = 'var(--width-multiplier)'
-  const px = size === 'sm' ? `calc(26 * ${m})` : `calc(32 * ${m})`
-  const fs = size === 'sm' ? `calc(12 * ${m})` : `calc(13 * ${m})`
-
+export function ScoreCircle({ score }: { score: number | null }) {
   let bg = 'var(--surface-2)', color = 'var(--text-muted)', border = 'var(--border-md)'
   if (score !== null) {
     if (score <= 6)               { bg = 'var(--red-bg)';   color = 'var(--red)';   border = '#F5B8B8' }
@@ -24,7 +15,7 @@ export function ScoreCircle({ score, size = 'md' }: ScoreCircleProps) {
   return (
     <div
       className={styles.scoreCircle}
-      style={{ width: px, height: px, background: bg, color, border: `1.5px solid ${border}`, fontSize: fs }}
+      style={{ background: bg, color, border: `1.5px solid ${border}` }}
     >
       {score ?? '—'}
     </div>
@@ -33,10 +24,10 @@ export function ScoreCircle({ score, size = 'md' }: ScoreCircleProps) {
 
 // ─── Status Badge ────────────────────────────────────────────
 const STATUS_MAP: Record<string, { label: string; bg: string; color: string }> = {
-  received:    { label: 'Получено',    bg: 'var(--green-bg)',  color: 'var(--green)' },
-  waiting:     { label: 'Ожидание',    bg: 'var(--amber-bg)', color: 'var(--amber)' },
-  unavailable: { label: 'Недоступен',  bg: 'var(--red-bg)',   color: 'var(--red)' },
-  not_called:  { label: 'Не звонили',  bg: 'var(--surface-2)', color: 'var(--text-secondary)' },
+  received:    { label: 'Получено',   bg: 'var(--green-bg)',  color: 'var(--green)' },
+  waiting:     { label: 'Ожидание',   bg: 'var(--amber-bg)', color: 'var(--amber)' },
+  unavailable: { label: 'Недоступен', bg: 'var(--red-bg)',   color: 'var(--red)' },
+  not_called:  { label: 'Ожидание',   bg: 'var(--amber-bg)', color: 'var(--amber)' },
 }
 
 export function StatusBadge({ status }: { status: RecordStatus | string }) {

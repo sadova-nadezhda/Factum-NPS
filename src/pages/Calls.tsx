@@ -1,6 +1,6 @@
-import React, { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { clsx } from 'clsx'
-import { ScoreSelector, Card } from '../components/ui'
+import { ScoreSelector, ScoreCircle, StatusBadge, Card } from '../components/ui'
 import type { PeriodFilter } from '../components/PeriodPicker/PeriodPicker'
 import { RecordFilters } from '../components/RecordFilters/RecordFilters'
 import { useStore } from '../hooks/store'
@@ -23,6 +23,7 @@ export default function Calls() {
   const [score, setScore]           = useState<number | null>(null)
   const [comment, setComment]       = useState('')
   const [saving, setSaving]         = useState(false)
+  const [sheetExpanded, setSheetExpanded] = useState(false)
   const [page, setPage]             = useState(1)
   const [query, setQuery]           = useState('')
   const [period, setPeriod]         = useState<PeriodFilter>({ type: '' })
@@ -99,6 +100,7 @@ export default function Calls() {
     setSelectedId(id)
     setScore(null)
     setComment('')
+    setSheetExpanded(false)
   }
 
   const handleSave = async () => {
@@ -214,11 +216,11 @@ export default function Calls() {
                       {r.service || '—'} · {r.specialist || '—'}
                     </div>
                   </div>
-                  <span className={clsx(s.itemBadge, s[r.status])}>
-                    {r.status === 'unavailable' ? 'Недоступен'
-                      : r.status === 'not_called' ? 'Не звонили'
-                      : 'Ожидание'}
-                  </span>
+                  {r.score !== null ? (
+                    <ScoreCircle score={r.score} />
+                  ) : (
+                    <StatusBadge status={r.status} />
+                  )}
                 </div>
               )
             })}
@@ -232,72 +234,100 @@ export default function Calls() {
             </div>
           </Card>
 
-          {selected ? (
-            <div className={s.sidebarWrapper}>
+          <div className={clsx(s.sidebarWrapper, selected && s.mobileVisible, selected && sheetExpanded && s.expanded)}>
             <Card className={s.sidebar}>
-              <div>
-                <div className={s.sidebarLabel}>Карточка проекта</div>
-                {fields.map(({ label, value, bold, mono, link }) => (
-                  <div key={label} className={s.fieldRow}>
-                    <span className={s.fieldLabel}>{label}</span>
-                    <span className={clsx(
-                      bold ? s.fieldValueBold : mono ? s.fieldValueMono : link ? s.fieldValueLink : s.fieldValue
-                    )}>
-                      {link && value ? <a href={`tel:${value}`}>{value}</a> : value || '—'}
-                    </span>
+              {selected ? (
+                <>
+                  <div className={s.sheetHandle} onClick={() => setSheetExpanded(v => !v)}>
+                    <div className={s.handlePill} />
+                    <div className={s.handleInfo}>
+                      <div className={s.handleName}>{selected.client || selected.company || 'Клиент'}</div>
+                      <div className={s.handleSub}>{selected.phone || selected.service || ''}</div>
+                    </div>
+                    <svg className={clsx(s.handleChevron, sheetExpanded && s.chevronUp)} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <polyline points="18 15 12 9 6 15" />
+                    </svg>
                   </div>
-                ))}
-              </div>
+                  <div className={s.sidebarBody}>
+                    <div>
+                      <div className={s.sidebarLabel}>Карточка проекта</div>
+                      {fields.map(({ label, value, bold, mono, link }) => (
+                        <div key={label} className={s.fieldRow}>
+                          <span className={s.fieldLabel}>{label}</span>
+                          <span className={clsx(
+                            bold ? s.fieldValueBold : mono ? s.fieldValueMono : link ? s.fieldValueLink : s.fieldValue
+                          )}>
+                            {link && value ? <a href={`tel:${value}`}>{value}</a> : value || '—'}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
 
-              <div>
-                <div className={s.sidebarLabel}>Оценка NPS</div>
-                <ScoreSelector value={score} onChange={setScore} />
-                {score !== null && (
-                  <div className={s.scoreHint}>
-                    {score <= 6 && '⚠️ Критик — требует внимания руководителя'}
-                    {score >= 7 && score <= 8 && '😐 Пассив — нейтральная оценка'}
-                    {score >= 9 && '⭐ Промоутер — порекомендует нас'}
+                    {selected.score !== null && (
+                      <div className={s.prevBlock}>
+                        <div className={s.sidebarLabel}>Предыдущая оценка</div>
+                        <div className={s.prevScore}>
+                          <ScoreCircle score={selected.score} />
+                          <span className={s.prevScoreHint}>
+                            {selected.score <= 6 ? 'Критик' : selected.score <= 8 ? 'Пассив' : 'Промоутер'}
+                          </span>
+                        </div>
+                        {selected.comment?.trim() && (
+                          <div className={s.prevComment}>{selected.comment.trim()}</div>
+                        )}
+                      </div>
+                    )}
+
+                    <div>
+                      <div className={s.sidebarLabel}>Оценка NPS</div>
+                      <ScoreSelector value={score} onChange={setScore} />
+                      {score !== null && (
+                        <div className={s.scoreHint}>
+                          {score <= 6 && '⚠️ Критик — требует внимания руководителя'}
+                          {score >= 7 && score <= 8 && '😐 Пассив — нейтральная оценка'}
+                          {score >= 9 && '⭐ Промоутер — порекомендует нас'}
+                        </div>
+                      )}
+                    </div>
+
+                    <div>
+                      <div className={s.sidebarLabel}>Комментарий</div>
+                      <textarea
+                        placeholder="Заметка по звонку..."
+                        value={comment}
+                        onChange={e => setComment(e.target.value)}
+                        className={s.textarea}
+                      />
+                    </div>
+
+                    <div className={s.actions}>
+                      <button type="button" className={s.btnNoDial} onClick={handleNoDial}>
+                        Не дозвонились
+                      </button>
+                      <button type="button" className={s.btnSave} onClick={handleSave} disabled={saving}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" />
+                          <polyline points="17 21 17 13 7 13 7 21" />
+                          <polyline points="7 3 7 8 15 8" />
+                        </svg>
+                        {saving ? 'Сохранение...' : 'Сохранить оценку'}
+                      </button>
+                    </div>
                   </div>
-                )}
-              </div>
-
-              <div>
-                <div className={s.sidebarLabel}>Комментарий</div>
-                <textarea
-                  placeholder="Заметка по звонку..."
-                  value={comment}
-                  onChange={e => setComment(e.target.value)}
-                  className={s.textarea}
-                />
-              </div>
-
-              <div className={s.actions}>
-                <button type="button" className={s.btnNoDial} onClick={handleNoDial}>
-                  Не дозвонились
-                </button>
-                <button type="button" className={s.btnSave} onClick={handleSave} disabled={saving}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" />
-                    <polyline points="17 21 17 13 7 13 7 21" />
-                    <polyline points="7 3 7 8 15 8" />
-                  </svg>
-                  {saving ? 'Сохранение...' : 'Сохранить оценку'}
-                </button>
-              </div>
-            </Card>
-            </div>
-          ) : (
-            <div className={s.sidebarWrapper}>
-              <Card className={s.sidebar}>
+                </>
+              ) : (
                 <div className={s.emptySelect}>
                   <div className={s.emptySelectIcon}>👆</div>
                   Выберите карточку проекта из списка
                 </div>
-              </Card>
-            </div>
-          )}
+              )}
+            </Card>
+          </div>
         </div>
       </div>
+      {selected && sheetExpanded && (
+        <div className={s.backdrop} onClick={() => setSheetExpanded(false)} />
+      )}
     </div>
   )
 }
