@@ -1,0 +1,111 @@
+.page {
+  padding: calc(32 * var(--width-multiplier));
+
+  @media (max-width: 767px) {
+    padding: calc(18 * var(--width-multiplier)) calc(16 * var(--width-multiplier));
+  }
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: calc(12 * var(--width-multiplier));
+  margin-bottom: calc(24 * var(--width-multiplier));
+}
+
+.title {
+  font-size: calc(24 * var(--width-multiplier));
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.count {
+  background: var(--border);
+  color: var(--text-secondary);
+  font-size: calc(13 * var(--width-multiplier));
+  font-weight: 600;
+  padding: calc(2 * var(--width-multiplier)) calc(10 * var(--width-multiplier));
+  border-radius: calc(20 * var(--width-multiplier));
+}
+
+.toolbar {
+  margin-bottom: calc(16 * var(--width-multiplier));
+}
+
+.search {
+  width: 100%;
+  max-width: calc(400 * var(--width-multiplier));
+  padding: calc(10 * var(--width-multiplier)) calc(14 * var(--width-multiplier));
+  border: 1px solid var(--border-md);
+  border-radius: calc(8 * var(--width-multiplier));
+  font-size: calc(14 * var(--width-multiplier));
+  background: var(--surface);
+  color: var(--text-primary);
+  outline: none;
+
+  &:focus {
+    border-color: var(--brand);
+  }
+}
+
+.tableWrap {
+  background: var(--surface);
+  border-radius: calc(12 * var(--width-multiplier));
+  box-shadow: var(--shadow-sm);
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.thead tr {
+  background: #F5F5F7;
+}
+
+.th {
+  padding: calc(14 * var(--width-multiplier)) calc(16 * var(--width-multiplier));
+  text-align: left;
+  font-size: calc(12 * var(--width-multiplier));
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.row {
+  border-bottom: 1px solid var(--border);
+  transition: background 0.12s;
+
+  &:last-child { border-bottom: none; }
+  &:hover { background: var(--surface-2); }
+}
+
+.td {
+  padding: calc(14 * var(--width-multiplier)) calc(16 * var(--width-multiplier));
+  font-size: calc(14 * var(--width-multiplier));
+  color: var(--text-secondary);
+}
+
+.tdBold {
+  padding: calc(14 * var(--width-multiplier)) calc(16 * var(--width-multiplier));
+  font-size: calc(14 * var(--width-multiplier));
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.phone {
+  color: var(--brand);
+  text-decoration: none;
+  &:hover { text-decoration: underline; }
+}
+
+.empty {
+  text-align: center;
+  padding: calc(40 * var(--width-multiplier));
+  color: var(--text-muted);
+  font-size: calc(14 * var(--width-multiplier));
+}

@@ -11,9 +11,10 @@ interface Props {
   onChange: (v: string) => void
   options: RadioOption[]
   placeholder: string
+  align?: 'left' | 'right'
 }
 
-export function RadioPicker({ value, onChange, options, placeholder }: Props) {
+export function RadioPicker({ value, onChange, options, placeholder, align = 'left' }: Props) {
   const [open, setOpen] = useState(false)
   const wrapRef = useRef<HTMLDivElement>(null)
 
@@ -45,7 +46,7 @@ export function RadioPicker({ value, onChange, options, placeholder }: Props) {
       </button>
 
       {open && (
-        <div className={s.dropdown}>
+        <div className={s.dropdown} style={align === 'right' ? { left: 'auto', right: 0 } : undefined}>
           {options.map(o => (
             <div
               key={o.value}

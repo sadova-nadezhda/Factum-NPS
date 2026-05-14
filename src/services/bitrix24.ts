@@ -95,6 +95,31 @@ async function fetchScoreMaps(): Promise<ScoreMaps> {
   return scoreMapsCache
 }
 
+// Fetch a page of raw deals (no entity enrichment)
+async function fetchDealPage(start: number): Promise<{ deals: BitrixDeal[]; next: number | null; total: number }> {
+  const res = await fetch(`${WEBHOOK}/crm.deal.list.json`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      select: [
+        'ID', 'TITLE', 'CONTACT_ID', 'COMPANY_ID', 'COMPANY_TITLE',
+        'ASSIGNED_BY_ID', 'CATEGORY_ID', 'DATE_CREATE',
+        'UF_CRM_1737637647', 'UF_CRM_NPS_COMMENT', BITRIX_STATUS_FIELD,
+      ],
+      filter: { CATEGORY_ID: PROJECT_CATEGORY_IDS, CLOSED: 'N' },
+      order: { DATE_CREATE: 'DESC' },
+      start,
+    }),
+  })
+  const data = await res.json() as { result?: BitrixDeal[]; next?: number; total?: number }
+  return {
+    deals: Array.isArray(data.result) ? data.result : [],
+    next: typeof data.next === 'number' ? data.next : null,
+    total: data.total ?? 0,
+  }
+}
+
+// Fetch entities by IDs, batching by 50 to stay within Bitrix limits
 async function fetchEntities(
   endpoint: string,
   ids: string[],
@@ -102,20 +127,24 @@ async function fetchEntities(
 ): Promise<Record<string, BitrixContact>> {
   if (!WEBHOOK || ids.length === 0) return {}
 
-  const res = await fetch(`${WEBHOOK}/${endpoint}.json`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ select, filter: { ID: ids }, order: { ID: 'ASC' }, start: 0 }),
-  })
+  const BATCH = 50
+  const chunks: string[][] = []
+  for (let i = 0; i < ids.length; i += BATCH) chunks.push(ids.slice(i, i + BATCH))
 
-  const data = await res.json() as { result?: BitrixContact[] }
+  const results = await Promise.all(chunks.map(async chunk => {
+    const res = await fetch(`${WEBHOOK}/${endpoint}.json`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ select, filter: { ID: chunk }, order: { ID: 'ASC' }, start: 0 }),
+    })
+    const data = await res.json() as { result?: BitrixContact[] }
+    return Array.isArray(data.result) ? data.result : []
+  }))
 
-  return Array.isArray(data.result)
-    ? data.result.reduce<Record<string, BitrixContact>>((map, item) => {
-        map[String(item.ID)] = item
-        return map
-      }, {})
-    : {}
+  return results.flat().reduce<Record<string, BitrixContact>>((map, item) => {
+    map[String(item.ID)] = item
+    return map
+  }, {})
 }
 
 function formatContactName(contact: Partial<BitrixContact> = {}): string {
@@ -125,32 +154,52 @@ function formatContactName(contact: Partial<BitrixContact> = {}): string {
     .trim()
 }
 
+function mapDealToRecord(
+  deal: BitrixDeal,
+  contacts: Record<string, BitrixContact>,
+  companies: Record<string, BitrixContact>,
+  users: Record<string, BitrixContact>,
+  scoreMaps: ScoreMaps,
+): NpsRecord {
+  const categoryId = String(deal.CATEGORY_ID ?? '')
+  const contact = contacts[String(deal.CONTACT_ID)] ?? {}
+  const company = companies[String(deal.COMPANY_ID)] ?? {}
+  const user    = users[String(deal.ASSIGNED_BY_ID)] ?? {}
+  return {
+    id: String(deal.ID),
+    bitrixDealId: String(deal.ID),
+    project: deal.TITLE ?? '',
+    date: deal.DATE_CREATE?.split('T')[0] ?? '',
+    service: PROJECT_CATEGORY_SERVICE_MAP[categoryId] ?? 'Неизвестно',
+    department: categoryId,
+    specialist: formatContactName(user) || String(deal.ASSIGNED_BY_ID ?? ''),
+    company: (company as { TITLE?: string }).TITLE ?? deal.COMPANY_TITLE ?? deal.TITLE ?? '',
+    client: formatContactName(contact) || String(deal.CONTACT_ID ?? ''),
+    contactId: String(deal.CONTACT_ID ?? ''),
+    companyId: String(deal.COMPANY_ID ?? ''),
+    phone: contact.PHONE?.[0]?.VALUE ?? '',
+    score: deal.UF_CRM_1737637647 != null && deal.UF_CRM_1737637647 !== ''
+      ? (scoreMaps.idToScore.get(String(deal.UF_CRM_1737637647)) ?? null)
+      : null,
+    comment: deal.UF_CRM_NPS_COMMENT ?? '',
+    status: deal.UF_CRM_1737637647 != null && deal.UF_CRM_1737637647 !== ''
+      ? 'received'
+      : mapBitrixStatus(deal[BITRIX_STATUS_FIELD] as string | null),
+    called: false,
+  }
+}
+
+// Kept for fetchProjectsPage (single-page use)
 async function fetchProjectsPageFromBitrix(start: number, scoreMaps: ScoreMaps): Promise<BitrixPage> {
   if (!WEBHOOK) {
     return { records: MOCK_RECORDS, next: null, total: MOCK_RECORDS.length }
   }
 
-  const res = await fetch(`${WEBHOOK}/crm.deal.list.json`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      select: [
-        'ID', 'TITLE', 'CONTACT_ID', 'COMPANY_ID', 'COMPANY_TITLE',
-        'ASSIGNED_BY_ID', 'CATEGORY_ID', 'STAGE_ID', 'TYPE_ID', 'DATE_CREATE', 'CLOSED',
-        'UF_CRM_1737637647', 'UF_CRM_NPS_COMMENT', BITRIX_STATUS_FIELD,
-      ],
-      filter: { CATEGORY_ID: PROJECT_CATEGORY_IDS, CLOSED: 'N' },
-      order: { DATE_CREATE: 'DESC' },
-      start,
-    }),
-  })
-
-  const data = await res.json() as { result?: BitrixDeal[]; next?: number; total?: number }
-  const deals = Array.isArray(data.result) ? data.result : []
+  const { deals, next, total } = await fetchDealPage(start)
 
   const contactIds = [...new Set(deals.map(d => d.CONTACT_ID).filter(Boolean).map(String))]
   const companyIds = [...new Set(deals.map(d => d.COMPANY_ID).filter(Boolean).map(String))]
-  const userIds = [...new Set(deals.map(d => d.ASSIGNED_BY_ID).filter(Boolean).map(String))]
+  const userIds    = [...new Set(deals.map(d => d.ASSIGNED_BY_ID).filter(Boolean).map(String))]
 
   const [contacts, companies, users] = await Promise.all([
     fetchEntities('crm.contact.list', contactIds, ['ID', 'NAME', 'SECOND_NAME', 'LAST_NAME', 'PHONE']),
@@ -158,40 +207,10 @@ async function fetchProjectsPageFromBitrix(start: number, scoreMaps: ScoreMaps):
     fetchEntities('user.get', userIds, ['ID', 'NAME', 'SECOND_NAME', 'LAST_NAME']),
   ])
 
-  const records: NpsRecord[] = deals.map((deal) => {
-    const categoryId = String(deal.CATEGORY_ID ?? '')
-    const contact = contacts[String(deal.CONTACT_ID)] ?? {}
-    const company = companies[String(deal.COMPANY_ID)] ?? {}
-    const user = users[String(deal.ASSIGNED_BY_ID)] ?? {}
-
-    return {
-      id: String(deal.ID),
-      bitrixDealId: String(deal.ID),
-      project: deal.TITLE ?? '',
-      date: deal.DATE_CREATE?.split('T')[0] ?? '',
-      service: PROJECT_CATEGORY_SERVICE_MAP[categoryId] ?? 'Неизвестно',
-      department: categoryId,
-      specialist: formatContactName(user) || String(deal.ASSIGNED_BY_ID ?? ''),
-      company: (company as { TITLE?: string }).TITLE ?? deal.COMPANY_TITLE ?? deal.TITLE ?? '',
-      client: formatContactName(contact) || String(deal.CONTACT_ID ?? ''),
-      contactId: String(deal.CONTACT_ID ?? ''),
-      companyId: String(deal.COMPANY_ID ?? ''),
-      phone: contact.PHONE?.[0]?.VALUE ?? '',
-      score: deal.UF_CRM_1737637647 != null && deal.UF_CRM_1737637647 !== ''
-        ? (scoreMaps.idToScore.get(String(deal.UF_CRM_1737637647)) ?? null)
-        : null,
-      comment: deal.UF_CRM_NPS_COMMENT ?? '',
-      status: deal.UF_CRM_1737637647 != null && deal.UF_CRM_1737637647 !== ''
-        ? 'received'
-        : mapBitrixStatus(deal[BITRIX_STATUS_FIELD] as string | null),
-      called: false,
-    }
-  })
-
   return {
-    records,
-    next: typeof data.next === 'number' ? data.next : null,
-    total: data.total ?? records.length,
+    records: deals.map(d => mapDealToRecord(d, contacts, companies, users, scoreMaps)),
+    next,
+    total,
   }
 }
 
@@ -210,19 +229,34 @@ export const bitrix24 = {
     if (!WEBHOOK) return MOCK_RECORDS
 
     const scoreMaps = await fetchScoreMaps()
-    const all: NpsRecord[] = []
-    let start: number | null = 0
+
     try {
-      while (start !== null) {
-        const page = await fetchProjectsPageFromBitrix(start, scoreMaps)
-        all.push(...page.records)
-        start = page.next
-      }
+      // Phase 1: fetch all deal pages in parallel
+      // First page gives us the total so we can calculate remaining offsets
+      const first = await fetchDealPage(0)
+      const PAGE_SIZE = 50
+      const offsets: number[] = []
+      for (let s = PAGE_SIZE; s < first.total; s += PAGE_SIZE) offsets.push(s)
+
+      const restPages = await Promise.all(offsets.map(s => fetchDealPage(s)))
+      const allDeals = [first.deals, ...restPages.map(p => p.deals)].flat()
+
+      // Phase 2: fetch all unique entities in one round (3 parallel requests)
+      const contactIds = [...new Set(allDeals.map(d => d.CONTACT_ID).filter(Boolean).map(String))]
+      const companyIds = [...new Set(allDeals.map(d => d.COMPANY_ID).filter(Boolean).map(String))]
+      const userIds    = [...new Set(allDeals.map(d => d.ASSIGNED_BY_ID).filter(Boolean).map(String))]
+
+      const [contacts, companies, users] = await Promise.all([
+        fetchEntities('crm.contact.list', contactIds, ['ID', 'NAME', 'SECOND_NAME', 'LAST_NAME', 'PHONE']),
+        fetchEntities('crm.company.list', companyIds, ['ID', 'TITLE']),
+        fetchEntities('user.get', userIds, ['ID', 'NAME', 'SECOND_NAME', 'LAST_NAME']),
+      ])
+
+      return allDeals.map(d => mapDealToRecord(d, contacts, companies, users, scoreMaps))
     } catch (err) {
       console.error('[Bitrix24] Ошибка загрузки всех страниц:', err)
-      return all.length > 0 ? all : MOCK_RECORDS
+      return MOCK_RECORDS
     }
-    return all
   },
 
   async sendNpsToDeal(

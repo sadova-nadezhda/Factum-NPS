@@ -138,14 +138,27 @@ export function useStats(records: NpsRecord[] = []) {
   const avg = withScore.length
     ? (withScore.reduce((sum, r) => sum + Number(r.score ?? 0), 0) / withScore.length).toFixed(1)
     : 0
+
+  const promoters  = withScore.filter(r => (r.score ?? 0) >= 9).length
+  const passives   = withScore.filter(r => (r.score ?? 0) >= 7 && (r.score ?? 0) <= 8).length
+  const detractors = withScore.filter(r => (r.score ?? 0) <= 6).length
+  // NPS = %Promoters(9-10) − %Detractors(1-6), range −100…+100
+  const nps = responded ? Math.round((promoters - detractors) / responded * 100) : 0
+  const qualitative = records.filter(r => r.comment && r.comment.trim().length > 0).length
+
   return {
     responseRate,
     responded,
     total,
     avg,
-    low: withScore.filter(r => (r.score ?? 0) <= 6).length,
-    mid: withScore.filter(r => (r.score ?? 0) >= 7 && (r.score ?? 0) <= 8).length,
-    high: withScore.filter(r => (r.score ?? 0) >= 9).length,
+    nps,
+    promoters,
+    passives,
+    detractors,
+    qualitative,
+    low: detractors,
+    mid: passives,
+    high: promoters,
     waiting: records.filter(r => r.status === 'waiting').length,
     unavailable: records.filter(r => r.status === 'unavailable').length,
     callQueue: records.filter(r => !r.called),

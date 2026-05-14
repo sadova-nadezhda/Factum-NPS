@@ -40,6 +40,36 @@
   border-color: currentColor;
 }
 
+.searchWrap {
+  position: relative;
+  flex: 1;
+}
+
+.searchIcon {
+  position: absolute;
+  left: calc(12 * var(--width-multiplier));
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.searchInput {
+  width: 100%;
+  padding: calc(9 * var(--width-multiplier)) calc(12 * var(--width-multiplier))
+           calc(9 * var(--width-multiplier)) calc(36 * var(--width-multiplier));
+  border: 1px solid var(--border-md);
+  border-radius: calc(8 * var(--width-multiplier));
+  font-size: calc(14 * var(--width-multiplier));
+  background: var(--surface);
+  color: var(--text-primary);
+  outline: none;
+  box-sizing: border-box;
+
+  &::placeholder { color: var(--text-muted); }
+  &:focus { border-color: var(--brand); }
+}
+
 .inputGroup,
 .selectGroup {
   display: flex;

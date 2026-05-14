@@ -1,0 +1,211 @@
+.sidebar {
+  width: calc(200 * var(--width-multiplier));
+  height: 100vh;
+  height: 100dvh;
+  background: #111111;
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  flex-shrink: 0;
+  overflow-y: auto;
+
+  @media (max-width: 767px) {
+    display: none;
+  }
+}
+
+// ─── Mobile Bottom Nav ───────────────────────────────────────
+.mobileNav {
+  display: none;
+
+  @media (max-width: 767px) {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 500;
+    background: #111111;
+    border-top: 1px solid rgba(255,255,255,0.07);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+.mobileNavItem {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(3 * var(--width-multiplier));
+  padding: calc(10 * var(--width-multiplier)) calc(4 * var(--width-multiplier));
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.45);
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.mobileNavItemActive {
+  color: #FF7040;
+}
+
+.mobileNavIcon {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    width: calc(22 * var(--width-multiplier));
+    height: calc(22 * var(--width-multiplier));
+  }
+}
+
+.mobileBadge {
+  position: absolute;
+  top: calc(-4 * var(--width-multiplier));
+  right: calc(-6 * var(--width-multiplier));
+  background: #FF7040;
+  color: #fff;
+  font-size: calc(9 * var(--width-multiplier));
+  font-weight: 700;
+  padding: calc(1 * var(--width-multiplier)) calc(4 * var(--width-multiplier));
+  border-radius: calc(8 * var(--width-multiplier));
+  line-height: 1.4;
+}
+
+.mobileNavLabel {
+  font-size: calc(10 * var(--width-multiplier));
+  white-space: nowrap;
+}
+
+.logo {
+  padding: calc(16 * var(--width-multiplier));
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+
+  img {
+    height: auto;
+    width: 100%;
+    filter: brightness(0) invert(1);
+    opacity: 0.9;
+  }
+}
+
+.nav {
+  flex: 1;
+  padding: calc(12 * var(--width-multiplier)) calc(10 * var(--width-multiplier));
+  display: flex;
+  flex-direction: column;
+  gap: calc(2 * var(--width-multiplier));
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: calc(10 * var(--width-multiplier));
+  padding: calc(9 * var(--width-multiplier)) calc(12 * var(--width-multiplier));
+  border-radius: calc(8 * var(--width-multiplier));
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  font-size: calc(14 * var(--width-multiplier));
+  font-weight: 500;
+  text-align: left;
+  width: 100%;
+  position: relative;
+  transition: background 0.15s, color 0.15s;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.82);
+  }
+}
+
+.itemActive {
+  background: rgba(221, 85, 0, 0.14);
+  color: #FF7040;
+
+  &:hover {
+    background: rgba(221, 85, 0, 0.2);
+    color: #FF7040;
+  }
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+
+  svg {
+    width: calc(17 * var(--width-multiplier));
+    height: calc(17 * var(--width-multiplier));
+  }
+}
+
+.label {
+  flex: 1;
+  white-space: nowrap;
+}
+
+.badge {
+  background: var(--primary);
+  color: #fff;
+  font-size: calc(10 * var(--width-multiplier));
+  font-weight: 600;
+  padding: calc(2 * var(--width-multiplier)) calc(6 * var(--width-multiplier));
+  border-radius: calc(10 * var(--width-multiplier));
+  line-height: 1.4;
+  min-width: calc(18 * var(--width-multiplier));
+  text-align: center;
+}
+
+.footer {
+  padding: calc(14 * var(--width-multiplier)) calc(10 * var(--width-multiplier));
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  display: flex;
+  flex-direction: column;
+  gap: calc(6 * var(--width-multiplier));
+}
+
+.syncBtn,
+.addBtn {
+  display: flex;
+  align-items: center;
+  gap: calc(9 * var(--width-multiplier));
+  padding: calc(9 * var(--width-multiplier)) calc(12 * var(--width-multiplier));
+  border-radius: calc(8 * var(--width-multiplier));
+  font-size: calc(13 * var(--width-multiplier));
+  font-weight: 500;
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.15s, border-color 0.15s;
+
+  svg {
+    width: calc(15 * var(--width-multiplier));
+    height: calc(15 * var(--width-multiplier));
+    flex-shrink: 0;
+  }
+}
+
+.syncBtn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.5);
+
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.3);
+    color: rgba(255, 255, 255, 0.8);
+  }
+}
+
+.addBtn {
+  background: var(--primary);
+  border: none;
+  color: #fff;
+
+  &:hover {
+    background: var(--primary-hover);
+  }
+}

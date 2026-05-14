@@ -74,6 +74,20 @@ export function ScoreSelector({ value, onChange }: ScoreSelectorProps) {
   )
 }
 
+// ─── Search Input ────────────────────────────────────────────
+interface SearchInputProps extends React.InputHTMLAttributes<HTMLInputElement> {}
+
+export function SearchInput(props: SearchInputProps) {
+  return (
+    <div className={styles.searchWrap}>
+      <svg className={styles.searchIcon} width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
+      </svg>
+      <input className={styles.searchInput} {...props} />
+    </div>
+  )
+}
+
 // ─── Input ───────────────────────────────────────────────────
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string

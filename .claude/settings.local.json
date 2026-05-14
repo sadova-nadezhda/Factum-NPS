@@ -15,7 +15,14 @@
       "Bash(New-Item -ItemType Directory -Force -Path \"D:\\\\hope\\\\documents\\\\GitHub\\\\Factum-ChatScanner\\\\src\\\\components\\\\ChatList\")",
       "Bash(New-Item -ItemType Directory -Force -Path \"D:\\\\hope\\\\documents\\\\GitHub\\\\Factum-ChatScanner\\\\src\\\\components\\\\ChatDetail\")",
       "Bash(New-Item -ItemType Directory -Force -Path \"D:\\\\hope\\\\documents\\\\GitHub\\\\Factum-ChatScanner\\\\src\\\\components\\\\UploadModal\")",
-      "Bash(Write-Host \"Directories created\")"
+      "Bash(Write-Host \"Directories created\")",
+      "Bash(Get-ChildItem -Recurse -Directory)",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(cd /d \"D:\\\\hope\\\\documents\\\\GitHub\\\\Factum-NPS\")",
+      "Bash(Get-ChildItem -Recurse -Force)",
+      "Bash(Sort-Object)",
+      "Bash(cd \"/d/hope/documents/GitHub/Factum-NPS\" && find . -type f -o -type d | head -200)",
+      "Read(//d/d/hope/documents/GitHub/**)"
     ]
   }
 }
