@@ -145,7 +145,7 @@ export default function Calls() {
     )
   }
 
-  if (queue.length === 0) {
+  if (totalRecords === 0) {
     return (
       <div className={s.page}>
         <div className='container'>
@@ -198,7 +198,13 @@ export default function Calls() {
               <span className={s.queueBadge}>{queue.length} карточек</span>
             </div>
 
-            {pageQueue.map(r => {
+            {queue.length === 0 ? (
+              <div className={s.emptyCard}>
+                <div className={s.emptyIcon}>🔍</div>
+                <div className={s.emptyTitle}>Ничего не найдено</div>
+                <div className={s.emptyDesc}>Попробуйте изменить фильтры или сбросить поиск.</div>
+              </div>
+            ) : pageQueue.map(r => {
               const active = r.id === selectedId
               return (
                 <div

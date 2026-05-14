@@ -78,7 +78,7 @@
 
 .pageTitle {
   font-size: calc(26 * var(--width-multiplier));
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-primary);
 }
 
@@ -95,7 +95,7 @@
   padding: calc(10 * var(--width-multiplier)) calc(18 * var(--width-multiplier));
   border: none;
   background: transparent;
-  font-size: calc(14 * var(--width-multiplier));
+  font-size: calc(16 * var(--width-multiplier));
   font-weight: 500;
   color: var(--text-secondary);
   cursor: pointer;
@@ -166,7 +166,7 @@
 .statTop {
   display: flex;
   align-items: center;
-  gap: calc(8 * var(--width-multiplier));
+  gap: calc(12 * var(--width-multiplier));
   color: var(--text-secondary);
 
   svg { width: calc(15 * var(--width-multiplier)); height: calc(15 * var(--width-multiplier)); flex-shrink: 0; }
@@ -175,11 +175,12 @@
 .statIcon { display: flex; align-items: center; }
 
 .statLabel {
-  font-size: calc(12 * var(--width-multiplier));
+  font-size: calc(14 * var(--width-multiplier));
   font-weight: 500;
   color: var(--text-secondary);
   white-space: nowrap;
   overflow: hidden;
+  text-transform: uppercase;
   text-overflow: ellipsis;
 }
 
@@ -190,8 +191,8 @@
 }
 
 .statValue {
-  font-size: calc(26 * var(--width-multiplier));
-  font-weight: 700;
+  font-size: calc(32 * var(--width-multiplier));
+  font-weight: 600;
   color: var(--text-primary);
   line-height: 1;
 }
@@ -246,16 +247,17 @@
   align-items: center;
   justify-content: space-between;
   gap: calc(8 * var(--width-multiplier));
+  margin-bottom: calc(12 * var(--width-multiplier));
 }
 
 .panelTitle {
-  font-size: calc(15 * var(--width-multiplier));
+  font-size: calc(24 * var(--width-multiplier));
   font-weight: 600;
   color: var(--text-primary);
 }
 
 .panelHint {
-  font-size: calc(11 * var(--width-multiplier));
+  font-size: calc(14 * var(--width-multiplier));
   color: var(--text-muted);
 }
 
@@ -273,7 +275,7 @@
 }
 
 .npsLabel {
-  font-size: calc(12 * var(--width-multiplier));
+  font-size: calc(14 * var(--width-multiplier));
   font-weight: 600;
 }
 
@@ -304,14 +306,14 @@
 
 .respLabel {
   flex: 1;
-  font-size: calc(14 * var(--width-multiplier));
+  font-size: calc(16 * var(--width-multiplier));
   font-weight: 500;
   color: var(--text-secondary);
 }
 
 .respCount {
   font-size: calc(14 * var(--width-multiplier));
-  font-weight: 700;
+  font-weight: 600;
 }
 
 // ─── History chart ────────────────────────────────────────────
@@ -332,8 +334,8 @@
   span {
     display: flex;
     align-items: center;
-    gap: calc(5 * var(--width-multiplier));
-    font-size: calc(12 * var(--width-multiplier));
+    gap: calc(4 * var(--width-multiplier));
+    font-size: calc(14 * var(--width-multiplier));
     color: var(--text-secondary);
     font-weight: 500;
   }
@@ -368,14 +370,14 @@
 
 .mgrSummaryName {
   padding: calc(12 * var(--width-multiplier)) calc(16 * var(--width-multiplier));
-  font-size: calc(13 * var(--width-multiplier));
-  font-weight: 700;
+  font-size: calc(16 * var(--width-multiplier));
+  font-weight: 600;
   color: var(--text-primary);
 }
 
 .mgrSummaryMeta {
   display: block;
-  font-size: calc(11 * var(--width-multiplier));
+  font-size: calc(14 * var(--width-multiplier));
   font-weight: 400;
   color: var(--text-muted);
   margin-top: calc(2 * var(--width-multiplier));
@@ -383,7 +385,7 @@
 
 .mgrSummaryStats {
   padding: calc(12 * var(--width-multiplier)) calc(16 * var(--width-multiplier));
-  font-size: calc(12 * var(--width-multiplier));
+  font-size: calc(14 * var(--width-multiplier));
   font-weight: 600;
   display: flex;
   gap: calc(16 * var(--width-multiplier));
@@ -402,8 +404,8 @@
   padding: calc(2 * var(--width-multiplier)) calc(8 * var(--width-multiplier));
   border-radius: calc(6 * var(--width-multiplier));
   border: 1px solid;
-  font-size: calc(12 * var(--width-multiplier));
-  font-weight: 700;
+  font-size: calc(14 * var(--width-multiplier));
+  font-weight: 600;
 }
 
 // ─── Responses tab ────────────────────────────────────────────

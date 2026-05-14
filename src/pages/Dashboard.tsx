@@ -453,11 +453,11 @@ export default function Dashboard() {
                 <span className={s.panelTitle}>Ответы</span>
               </div>
               <div className={s.donutWrap}>
-                <PieChart width={160} height={160}>
+                <PieChart width={220} height={220}>
                   <Pie
                     data={donutData.length ? donutData : [{ name: '—', value: 1, color: '#E2E8F0' }]}
-                    innerRadius={52}
-                    outerRadius={76}
+                    innerRadius={72}
+                    outerRadius={100}
                     startAngle={90}
                     endAngle={-270}
                     dataKey="value"

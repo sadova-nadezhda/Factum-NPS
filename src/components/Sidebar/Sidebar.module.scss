@@ -68,10 +68,10 @@
   right: calc(-6 * var(--width-multiplier));
   background: #FF7040;
   color: #fff;
-  font-size: calc(9 * var(--width-multiplier));
+  font-size: calc(10 * var(--width-multiplier));
   font-weight: 700;
-  padding: calc(1 * var(--width-multiplier)) calc(4 * var(--width-multiplier));
-  border-radius: calc(8 * var(--width-multiplier));
+  padding: calc(2 * var(--width-multiplier)) calc(4 * var(--width-multiplier));
+  border-radius: calc(4 * var(--width-multiplier));
   line-height: 1.4;
 }
 
@@ -110,7 +110,7 @@
   background: transparent;
   color: rgba(255, 255, 255, 0.5);
   cursor: pointer;
-  font-size: calc(14 * var(--width-multiplier));
+  font-size: calc(16 * var(--width-multiplier));
   font-weight: 500;
   text-align: left;
   width: 100%;
@@ -176,7 +176,7 @@
   gap: calc(9 * var(--width-multiplier));
   padding: calc(9 * var(--width-multiplier)) calc(12 * var(--width-multiplier));
   border-radius: calc(8 * var(--width-multiplier));
-  font-size: calc(13 * var(--width-multiplier));
+  font-size: calc(16 * var(--width-multiplier));
   font-weight: 500;
   cursor: pointer;
   width: 100%;
