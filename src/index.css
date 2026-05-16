@@ -59,6 +59,20 @@
   }
 }
 
+@media (max-width: 1380px) {
+  :root {
+    --width-base: 1200;
+    --width-current: 100vmin;
+  }
+}
+
+@media (max-width: 1200px) {
+  :root {
+    --width-base: 1180;
+    --width-current: 100vmin;
+  }
+}
+
 @media (max-width: 1024px) {
   :root {
     --width-base: 1100;
