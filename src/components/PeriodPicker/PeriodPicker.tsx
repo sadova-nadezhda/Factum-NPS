@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef } from 'react'
+import { useOutsideClick } from '../../hooks/useOutsideClick'
 import s from './PeriodPicker.module.scss'
 
 export interface PeriodFilter {
@@ -53,14 +54,7 @@ export function PeriodPicker({ value, onChange }: Props) {
   const [pickTo, setPickTo]     = useState<string | null>(value.to ?? null)
   const [hover, setHover]       = useState<string | null>(null)
   const wrapRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    function onOutside(e: MouseEvent) {
-      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setOpen(false)
-    }
-    document.addEventListener('mousedown', onOutside)
-    return () => document.removeEventListener('mousedown', onOutside)
-  }, [])
+  useOutsideClick(wrapRef, () => setOpen(false))
 
   const selectPreset = (type: PeriodFilter['type']) => {
     if (type === 'custom') {

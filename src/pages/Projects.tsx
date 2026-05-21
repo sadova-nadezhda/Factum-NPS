@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react'
 import { useStore } from '../hooks/store'
 import { ServiceTag, SearchInput } from '../components/ui'
+import { npsColor } from '../utils/nps'
 import s from './Projects.module.scss'
 
 export default function Projects() {
@@ -43,13 +44,6 @@ export default function Projects() {
     const q = query.toLowerCase()
     return projects.filter(p => p.company.toLowerCase().includes(q))
   }, [projects, query])
-
-  const npsColor = (nps: number | null) => {
-    if (nps === null) return '#94A3B8'
-    if (nps >= 50) return '#22C55E'
-    if (nps >= 0)  return '#F59E0B'
-    return '#EF4444'
-  }
 
   return (
     <div className={s.page}>

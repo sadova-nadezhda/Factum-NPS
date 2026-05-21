@@ -55,6 +55,8 @@ interface BitrixDeal {
   DATE_CREATE?: string
   UF_CRM_1737637647?: string | number | null
   UF_CRM_NPS_COMMENT?: string | null
+  UF_CRM_1671013766?: string | null
+  UF_CRM_1779345788788?: string | null
   [key: string]: unknown
 }
 
@@ -104,7 +106,7 @@ async function fetchDealPage(start: number): Promise<{ deals: BitrixDeal[]; next
       select: [
         'ID', 'TITLE', 'CONTACT_ID', 'COMPANY_ID', 'COMPANY_TITLE',
         'ASSIGNED_BY_ID', 'CATEGORY_ID', 'DATE_CREATE',
-        'UF_CRM_1737637647', 'UF_CRM_NPS_COMMENT', BITRIX_STATUS_FIELD,
+        'UF_CRM_1737637647', 'UF_CRM_NPS_COMMENT', 'UF_CRM_1671013766', 'UF_CRM_1779345788788', BITRIX_STATUS_FIELD,
       ],
       filter: { CATEGORY_ID: PROJECT_CATEGORY_IDS, CLOSED: 'N' },
       order: { DATE_CREATE: 'DESC' },
@@ -164,15 +166,16 @@ function mapDealToRecord(
   const categoryId = String(deal.CATEGORY_ID ?? '')
   const contact = contacts[String(deal.CONTACT_ID)] ?? {}
   const company = companies[String(deal.COMPANY_ID)] ?? {}
-  const user    = users[String(deal.ASSIGNED_BY_ID)] ?? {}
+  const managerId = deal.UF_CRM_1671013766 || deal.ASSIGNED_BY_ID
+  const user      = users[String(managerId)] ?? {}
   return {
     id: String(deal.ID),
     bitrixDealId: String(deal.ID),
     project: deal.TITLE ?? '',
-    date: deal.DATE_CREATE?.split('T')[0] ?? '',
+    date: (deal.UF_CRM_1779345788788 ?? deal.DATE_CREATE)?.split('T')[0] ?? '',
     service: PROJECT_CATEGORY_SERVICE_MAP[categoryId] ?? 'Неизвестно',
     department: categoryId,
-    specialist: formatContactName(user) || String(deal.ASSIGNED_BY_ID ?? ''),
+    specialist: formatContactName(user) || String(managerId ?? ''),
     company: (company as { TITLE?: string }).TITLE ?? deal.COMPANY_TITLE ?? deal.TITLE ?? '',
     client: formatContactName(contact) || String(deal.CONTACT_ID ?? ''),
     contactId: String(deal.CONTACT_ID ?? ''),
@@ -199,7 +202,7 @@ async function fetchProjectsPageFromBitrix(start: number, scoreMaps: ScoreMaps):
 
   const contactIds = [...new Set(deals.map(d => d.CONTACT_ID).filter(Boolean).map(String))]
   const companyIds = [...new Set(deals.map(d => d.COMPANY_ID).filter(Boolean).map(String))]
-  const userIds    = [...new Set(deals.map(d => d.ASSIGNED_BY_ID).filter(Boolean).map(String))]
+  const userIds    = [...new Set(deals.flatMap(d => [d.UF_CRM_1671013766 || d.ASSIGNED_BY_ID]).filter(Boolean).map(String))]
 
   const [contacts, companies, users] = await Promise.all([
     fetchEntities('crm.contact.list', contactIds, ['ID', 'NAME', 'SECOND_NAME', 'LAST_NAME', 'PHONE']),
@@ -244,7 +247,7 @@ export const bitrix24 = {
       // Phase 2: fetch all unique entities in one round (3 parallel requests)
       const contactIds = [...new Set(allDeals.map(d => d.CONTACT_ID).filter(Boolean).map(String))]
       const companyIds = [...new Set(allDeals.map(d => d.COMPANY_ID).filter(Boolean).map(String))]
-      const userIds    = [...new Set(allDeals.map(d => d.ASSIGNED_BY_ID).filter(Boolean).map(String))]
+      const userIds    = [...new Set(allDeals.flatMap(d => [d.UF_CRM_1671013766 || d.ASSIGNED_BY_ID]).filter(Boolean).map(String))]
 
       const [contacts, companies, users] = await Promise.all([
         fetchEntities('crm.contact.list', contactIds, ['ID', 'NAME', 'SECOND_NAME', 'LAST_NAME', 'PHONE']),
@@ -275,11 +278,13 @@ export const bitrix24 = {
     const scoreListId = score !== null ? (scoreMaps.scoreToId.get(score) ?? score) : null
     const bitrixStatus = STATUS_TO_BITRIX[status] ?? 'Ожидание'
 
+    const ratedAt = new Date().toISOString().split('T')[0]
+
     try {
       await fetch(`${WEBHOOK}/crm.deal.update.json`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, fields: { UF_CRM_1737637647: scoreListId, UF_CRM_NPS_SCORE: score, UF_CRM_NPS_COMMENT: comment, [BITRIX_STATUS_FIELD]: bitrixStatus } }),
+        body: JSON.stringify({ id, fields: { UF_CRM_1737637647: scoreListId, UF_CRM_NPS_SCORE: score, UF_CRM_NPS_COMMENT: comment, UF_CRM_1779345788788: ratedAt, [BITRIX_STATUS_FIELD]: bitrixStatus } }),
       })
 
       await fetch(`${WEBHOOK}/crm.timeline.comment.add.json`, {

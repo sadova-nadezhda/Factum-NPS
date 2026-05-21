@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef } from 'react'
+import { useOutsideClick } from '../../hooks/useOutsideClick'
 import s from './RadioPicker.module.scss'
 
 export interface RadioOption {
@@ -17,14 +18,7 @@ interface Props {
 export function RadioPicker({ value, onChange, options, placeholder, align = 'left' }: Props) {
   const [open, setOpen] = useState(false)
   const wrapRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    function onOutside(e: MouseEvent) {
-      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setOpen(false)
-    }
-    document.addEventListener('mousedown', onOutside)
-    return () => document.removeEventListener('mousedown', onOutside)
-  }, [])
+  useOutsideClick(wrapRef, () => setOpen(false))
 
   const label = options.find(o => o.value === value)?.label ?? placeholder
 

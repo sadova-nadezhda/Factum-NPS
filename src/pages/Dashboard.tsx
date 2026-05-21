@@ -9,6 +9,10 @@ import { PeriodPicker } from '../components/PeriodPicker/PeriodPicker'
 import type { PeriodFilter } from '../components/PeriodPicker/PeriodPicker'
 import { RadioPicker } from '../components/RadioPicker/RadioPicker'
 import { useStore, useStats } from '../hooks/store'
+import { applyPeriod } from '../utils/period'
+import { formatDate } from '../utils/date'
+import { getScoreHint, npsColor, scoreRowColors } from '../utils/nps'
+import { PAGE_SIZE } from '../data/constants'
 import type { NpsRecord } from '../types'
 import s from './Dashboard.module.scss'
 
@@ -18,8 +22,6 @@ type SortKey = 'date' | 'score'
 type SortDir = 'asc' | 'desc'
 
 const MONTHS = ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек']
-
-const PAGE_SIZE = 50
 
 // ─── NPS Gauge ───────────────────────────────────────────────
 function NpsGauge({ score }: { score: number }) {
@@ -144,33 +146,6 @@ export default function Dashboard() {
 
   const services     = useMemo(() => [...new Set(records.map(r => r.service).filter(Boolean))], [records])
   const companies    = useMemo(() => [...new Set(records.map(r => r.company).filter(Boolean))].sort(), [records])
-  const specialists  = useMemo(() => [...new Set(records.map(r => r.specialist).filter(Boolean))].sort(), [records])
-
-  // Helper: filter by PeriodFilter
-  const applyPeriod = (arr: NpsRecord[], p: PeriodFilter) => {
-    const now = new Date()
-    let from: string | undefined
-    let to: string | undefined
-    if (p.type === 'week') {
-      const d = new Date(now); d.setDate(d.getDate() - 7)
-      from = d.toISOString().split('T')[0]
-    } else if (p.type === 'this_month') {
-      from = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`
-    } else if (p.type === 'last_month') {
-      const f = new Date(now.getFullYear(), now.getMonth() - 1, 1)
-      const t = new Date(now.getFullYear(), now.getMonth(), 0)
-      from = f.toISOString().split('T')[0]
-      to   = t.toISOString().split('T')[0]
-    } else if (p.type === 'quarter') {
-      const d = new Date(now); d.setMonth(d.getMonth() - 3)
-      from = d.toISOString().split('T')[0]
-    } else if (p.type === 'custom') {
-      from = p.from; to = p.to
-    }
-    if (from) arr = arr.filter(r => r.date >= from!)
-    if (to)   arr = arr.filter(r => r.date <= to!)
-    return arr
-  }
 
   // Helper: previous period for trend comparison
   const getPrevRange = (p: PeriodFilter): { from: string; to: string } | null => {
@@ -327,12 +302,6 @@ export default function Dashboard() {
   const toggleSort = (key: SortKey) => {
     if (sortKey === key) setSortDir(d => d === 'asc' ? 'desc' : 'asc')
     else { setSortKey(key); setSortDir('desc') }
-  }
-
-  const formatDate = (d: string) => {
-    if (!d) return '—'
-    const dt = new Date(d)
-    return isNaN(dt.getTime()) ? '—' : dt.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' })
   }
 
   const handleRowClick = (r: NpsRecord) => {
@@ -546,7 +515,7 @@ export default function Dashboard() {
                       <button className={s.sortBtn} onClick={() => toggleSort('date')}>Дата ↕</button>
                     </th>
                     <th className={s.th}>Услуга</th>
-                    <th className={s.th}>Специалист</th>
+                    <th className={s.th}>Проект-менеджер</th>
                     <th className={s.th}>Компания</th>
                     <th className={s.th}>Клиент</th>
                     <th className={s.th}>
@@ -586,7 +555,7 @@ export default function Dashboard() {
                                   { label: 'Клиент',     value: r.client },
                                   { label: 'Телефон',    value: r.phone, phone: true },
                                   { label: 'Услуга',     value: r.service },
-                                  { label: 'Специалист', value: r.specialist },
+                                  { label: 'Проект-менеджер', value: r.specialist },
                                   { label: 'Дата',       value: formatDate(r.date) },
                                 ].filter(f => f.value).map(f => (
                                   <div key={f.label} className={s.aField}>
@@ -602,11 +571,7 @@ export default function Dashboard() {
                                   <div className={s.aSecLabel}>Оценка NPS</div>
                                   <ScoreSelector value={editScore} onChange={setEditScore} />
                                   {editScore !== null && (
-                                    <div className={s.scoreHint}>
-                                      {editScore <= 6 && '⚠️ Критик — требует особого внимания'}
-                                      {editScore >= 7 && editScore <= 8 && '😐 Пассив — нейтральная оценка'}
-                                      {editScore >= 9 && '⭐ Промоутер — вероятно порекомендует'}
-                                    </div>
+                                    <div className={s.scoreHint}>{getScoreHint(editScore)}</div>
                                   )}
                                 </div>
                                 <div>
@@ -668,7 +633,7 @@ export default function Dashboard() {
                     <tr><td colSpan={6} className={s.placeholder}>Нет данных</td></tr>
                   )}
                   {managersData.map(m => {
-                    const npsColor = m.nps === null ? '#94A3B8' : m.nps >= 50 ? '#22C55E' : m.nps >= 0 ? '#F59E0B' : '#EF4444'
+                    const nc = npsColor(m.nps)
                     return (
                       <React.Fragment key={m.name}>
                         {/* Manager summary row */}
@@ -686,7 +651,7 @@ export default function Dashboard() {
                           </td>
                           <td colSpan={3} style={{ textAlign: 'right', paddingRight: 'calc(16 * var(--width-multiplier))' }}>
                             {m.nps !== null && (
-                              <span className={s.npsChip} style={{ color: npsColor, borderColor: npsColor + '55', background: npsColor + '14' }}>
+                              <span className={s.npsChip} style={{ color: nc, borderColor: nc + '55', background: nc + '14' }}>
                                 NPS {m.nps > 0 ? '+' : ''}{m.nps}
                               </span>
                             )}
@@ -694,16 +659,14 @@ export default function Dashboard() {
                         </tr>
                         {/* Project rows */}
                         {m.records.map((r, i) => {
-                          const sc = r.score
-                          const rowBg = sc === null ? undefined : sc >= 9 ? '#F0FDF4' : sc >= 7 ? '#FFFBEB' : '#FEF2F2'
-                          const scoreCol = sc === null ? 'var(--text-muted)' : sc >= 9 ? '#22C55E' : sc >= 7 ? '#F59E0B' : '#EF4444'
+                          const { bg: rowBg, text: scoreCol } = scoreRowColors(r.score)
                           return (
                             <tr key={i} className={s.mgrProjectRow} style={rowBg ? { background: rowBg } : undefined}>
                               <td className={s.td} style={{ width: 'calc(200 * var(--width-multiplier))', paddingLeft: 'calc(32 * var(--width-multiplier))' }}></td>
                               <td className={s.tdBold}>{r.company || r.client || '—'}</td>
                               <td className={s.td} style={{ textAlign: 'center' }}>
-                                {sc !== null
-                                  ? <strong style={{ color: scoreCol, fontSize: 'calc(15 * var(--width-multiplier))' }}>{sc}</strong>
+                                {r.score !== null
+                                  ? <strong style={{ color: scoreCol, fontSize: 'calc(15 * var(--width-multiplier))' }}>{r.score}</strong>
                                   : <span style={{ color: 'var(--text-muted)' }}>—</span>
                                 }
                               </td>

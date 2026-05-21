@@ -68,7 +68,12 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     const record = state.records.find(r => r.id === id)
     if (updates.called) callCycle.markCalled(id)
     if (updates.status === 'unavailable') callCycle.markUnavailable(id)
-    dispatch({ type: 'UPDATE_RECORD', payload: { id, ...updates } })
+
+    const today = new Date().toISOString().split('T')[0]
+    const finalUpdates: Partial<NpsRecord> =
+      updates.score != null ? { date: today, ...updates } : updates
+
+    dispatch({ type: 'UPDATE_RECORD', payload: { id, ...finalUpdates } })
 
     if (updates.score !== undefined && record?.bitrixDealId) {
       const result = await bitrix24.sendNpsToDeal(

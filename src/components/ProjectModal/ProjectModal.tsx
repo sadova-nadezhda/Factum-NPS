@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import { ScoreSelector, StatusBadge, ServiceTag, Button } from '../ui'
+import { ScoreSelector, StatusBadge, Button } from '../ui'
 import { useStore } from '../../hooks/store'
+import { getScoreHint } from '../../utils/nps'
+import { formatDate } from '../../utils/date'
 import type { NpsRecord } from '../../types'
 import styles from './ProjectModal.module.scss'
 
@@ -14,17 +16,10 @@ const FIELD_ROWS: { label: string; key: keyof NpsRecord }[] = [
   { label: 'Клиент',        key: 'client' },
   { label: 'Телефон',       key: 'phone' },
   { label: 'Услуга',        key: 'service' },
-  { label: 'Специалист',    key: 'specialist' },
+  { label: 'Проект-менеджер', key: 'specialist' },
   { label: 'Дата',          key: 'date' },
 ]
 
-function formatDate(d: string) {
-  if (!d) return '—'
-  const dt = new Date(d)
-  return Number.isNaN(dt.getTime())
-    ? d
-    : dt.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })
-}
 
 export default function ProjectModal({ record, onClose }: ProjectModalProps) {
   const { updateRecord } = useStore()
@@ -60,7 +55,7 @@ export default function ProjectModal({ record, onClose }: ProjectModalProps) {
 
   const getValue = (key: keyof NpsRecord): string => {
     const val = record[key]
-    if (key === 'date') return formatDate(String(val ?? ''))
+    if (key === 'date') return formatDate(String(val ?? ''), 'long')
     return String(val ?? '') || '—'
   }
 
@@ -102,11 +97,7 @@ export default function ProjectModal({ record, onClose }: ProjectModalProps) {
             <div className={styles.sectionLabel}>Оценка NPS</div>
             <ScoreSelector value={score} onChange={setScore} />
             {score !== null && (
-              <div className={styles.scoreHint}>
-                {score <= 6 && '⚠️ Критик — требует особого внимания'}
-                {score >= 7 && score <= 8 && '😐 Пассив — нейтральная оценка'}
-                {score >= 9 && '⭐ Промоутер — вероятно порекомендует'}
-              </div>
+              <div className={styles.scoreHint}>{getScoreHint(score)}</div>
             )}
           </div>
 

@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Input, Select, ScoreSelector, Button, SectionLabel } from '../ui'
 import { useStore } from '../../hooks/store'
+import { useOutsideClick } from '../../hooks/useOutsideClick'
+import { getScoreHint } from '../../utils/nps'
 import { SERVICES, SPECIALISTS } from '../../data/constants'
 import type { AddRecordInput, NpsRecord } from '../../types'
 import styles from './AddModal.module.scss'
@@ -45,15 +47,7 @@ export default function AddModal({ open, onClose }: AddModalProps) {
     }
   }, [open])
 
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (companyRef.current && !companyRef.current.contains(e.target as Node)) {
-        setCompanySuggestions([])
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
+  useOutsideClick(companyRef, () => setCompanySuggestions([]))
 
   const b24Records = records.filter(r => r.bitrixDealId)
 
@@ -127,7 +121,7 @@ export default function AddModal({ open, onClose }: AddModalProps) {
             {services.map(s => <option key={s}>{s}</option>)}
           </Select>
           <Select value={form.specialist} onChange={e => set('specialist', e.target.value)}>
-            <option value="">Специалист</option>
+            <option value="">Проект-менеджер</option>
             {specialists.map(s => <option key={s}>{s}</option>)}
           </Select>
           <div className={styles.dealSearchWrapper} ref={companyRef}>
@@ -174,11 +168,7 @@ export default function AddModal({ open, onClose }: AddModalProps) {
         <div style={{ marginBottom: 20 }}>
           <ScoreSelector value={form.score} onChange={v => set('score', v)} />
           {form.score !== null && (
-            <div className={styles.scoreInfo}>
-              {form.score <= 6 && '⚠️ Критик — требует особого внимания'}
-              {form.score >= 7 && form.score <= 8 && '😐 Пассив — нейтральная оценка'}
-              {form.score >= 9 && '⭐ Промоутер — вероятно порекомендует'}
-            </div>
+            <div className={styles.scoreInfo}>{getScoreHint(form.score)}</div>
           )}
         </div>
 

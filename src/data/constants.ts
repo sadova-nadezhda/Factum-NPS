@@ -1,3 +1,5 @@
+export const PAGE_SIZE = 50
+
 export const SERVICES = ['SEO', 'Web', 'SMM', 'Target', 'Sales'] as const
 
 export const SPECIALISTS = [

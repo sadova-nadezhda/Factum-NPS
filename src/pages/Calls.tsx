@@ -4,9 +4,10 @@ import { ScoreSelector, ScoreCircle, StatusBadge, Card } from '../components/ui'
 import type { PeriodFilter } from '../components/PeriodPicker/PeriodPicker'
 import { RecordFilters } from '../components/RecordFilters/RecordFilters'
 import { useStore } from '../hooks/store'
+import { applyPeriod } from '../utils/period'
+import { getScoreHint } from '../utils/nps'
+import { PAGE_SIZE } from '../data/constants'
 import s from './Calls.module.scss'
-
-const PAGE_SIZE = 50
 
 type FieldDef = {
   label: string
@@ -46,35 +47,7 @@ export default function Calls() {
       )
     }
 
-    if (period.type) {
-      const now = new Date()
-      let from: string | undefined
-      let to: string | undefined
-
-      if (period.type === 'week') {
-        const d = new Date(now); d.setDate(d.getDate() - 7)
-        from = d.toISOString().split('T')[0]
-        to   = now.toISOString().split('T')[0]
-      } else if (period.type === 'this_month') {
-        from = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`
-        to   = now.toISOString().split('T')[0]
-      } else if (period.type === 'last_month') {
-        const f = new Date(now.getFullYear(), now.getMonth() - 1, 1)
-        const t = new Date(now.getFullYear(), now.getMonth(), 0)
-        from = f.toISOString().split('T')[0]
-        to   = t.toISOString().split('T')[0]
-      } else if (period.type === 'quarter') {
-        const d = new Date(now); d.setMonth(d.getMonth() - 3)
-        from = d.toISOString().split('T')[0]
-        to   = now.toISOString().split('T')[0]
-      } else if (period.type === 'custom') {
-        from = period.from
-        to   = period.to
-      }
-
-      if (from) res = res.filter(r => r.date >= from!)
-      if (to)   res = res.filter(r => r.date <= to!)
-    }
+    if (period.type) res = applyPeriod(res, period)
 
     if (serviceFilter) res = res.filter(r => r.service === serviceFilter)
 
@@ -166,7 +139,7 @@ export default function Calls() {
     { label: 'Клиент',        value: selected?.client },
     { label: 'Телефон',       value: selected?.phone,     mono: true, link: true },
     { label: 'Услуга',        value: selected?.service },
-    { label: 'Ответственный', value: selected?.specialist },
+    { label: 'Проект-менеджер', value: selected?.specialist },
   ]
 
   return (
@@ -288,11 +261,7 @@ export default function Calls() {
                       <div className={s.sidebarLabel}>Оценка NPS</div>
                       <ScoreSelector value={score} onChange={setScore} />
                       {score !== null && (
-                        <div className={s.scoreHint}>
-                          {score <= 6 && '⚠️ Критик — требует внимания руководителя'}
-                          {score >= 7 && score <= 8 && '😐 Пассив — нейтральная оценка'}
-                          {score >= 9 && '⭐ Промоутер — порекомендует нас'}
-                        </div>
+                        <div className={s.scoreHint}>{getScoreHint(score)}</div>
                       )}
                     </div>
 
