@@ -172,7 +172,7 @@ function mapDealToRecord(
     id: String(deal.ID),
     bitrixDealId: String(deal.ID),
     project: deal.TITLE ?? '',
-    date: (deal.UF_CRM_1779345788788 ?? deal.DATE_CREATE)?.split('T')[0] ?? '',
+    date: (deal.UF_CRM_1779345788788 || deal.DATE_CREATE)?.split('T')[0] ?? '',
     service: PROJECT_CATEGORY_SERVICE_MAP[categoryId] ?? 'Неизвестно',
     department: categoryId,
     specialist: formatContactName(user) || String(managerId ?? ''),
