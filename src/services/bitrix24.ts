@@ -28,12 +28,12 @@ const WEBHOOK = (import.meta.env.VITE_BITRIX_WEBHOOK as string | undefined)?.rep
 const PROJECT_CATEGORY_IDS = ['12', '6', '8', '14', '16', '28']
 
 const PROJECT_CATEGORY_SERVICE_MAP: Record<string, string> = {
-  '12': 'Web',
+  '12': 'WEB',
   '6': 'ADS',
   '8': 'SEO',
-  '14': 'Target',
-  '16': 'SMM Астана',
-  '28': 'SMM Алматы',
+  '14': 'TARGET',
+  '16': 'SMM 01',
+  '28': 'SMM 02',
 }
 
 interface BitrixContact {

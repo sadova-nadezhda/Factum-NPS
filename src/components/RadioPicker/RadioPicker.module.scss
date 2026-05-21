@@ -49,6 +49,8 @@
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
   padding: calc(8 * var(--width-multiplier));
   min-width: calc(180 * var(--width-multiplier));
+  max-height: calc(280 * var(--width-multiplier));
+  overflow-y: auto;
 }
 
 .option {
