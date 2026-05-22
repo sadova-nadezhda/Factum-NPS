@@ -40,7 +40,6 @@ const IconPlus = () => (
 
 const NAV = [
   { path: '/',         label: 'Дашборд', Icon: IconDashboard },
-  { path: '/clients',  label: 'Клиенты', Icon: IconUsers     },
   { path: '/projects', label: 'Проекты', Icon: IconFolder    },
   { path: '/calls',    label: 'Обзвон',  Icon: IconPhone     },
 ] as const

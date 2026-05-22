@@ -10,18 +10,19 @@ export default function Projects() {
 
   const projects = useMemo(() => {
     const map = new Map<string, {
-      company: string; services: Set<string>; total: number
+      company: string; services: Set<string>; clients: Set<string>; total: number
       promoters: number; passives: number; detractors: number; responded: number
     }>()
 
     records.forEach(r => {
       const key = r.company
       if (!map.has(key)) {
-        map.set(key, { company: r.company, services: new Set(), total: 0, promoters: 0, passives: 0, detractors: 0, responded: 0 })
+        map.set(key, { company: r.company, services: new Set(), clients: new Set(), total: 0, promoters: 0, passives: 0, detractors: 0, responded: 0 })
       }
       const p = map.get(key)!
       p.total++
       if (r.service) p.services.add(r.service)
+      if (r.client) p.clients.add(r.client)
       if (r.score !== null) {
         p.responded++
         if (r.score >= 9) p.promoters++
@@ -34,6 +35,7 @@ export default function Projects() {
       .map(p => ({
         ...p,
         services: [...p.services],
+        clients: [...p.clients],
         nps: p.responded ? Math.round((p.promoters - p.detractors) / p.responded * 100) : null,
       }))
       .sort((a, b) => b.total - a.total)
@@ -78,6 +80,14 @@ export default function Projects() {
             <div className={s.services}>
               {p.services.map(sv => <ServiceTag key={sv} service={sv} />)}
             </div>
+
+            {p.clients.length > 0 && (
+              <div className={s.clients}>
+                {p.clients.map(c => (
+                  <span key={c} className={s.clientChip}>{c}</span>
+                ))}
+              </div>
+            )}
 
             <div className={s.metrics}>
               <div className={s.metric}>

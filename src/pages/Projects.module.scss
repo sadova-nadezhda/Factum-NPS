@@ -103,6 +103,22 @@
   gap: calc(6 * var(--width-multiplier));
 }
 
+.clients {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(5 * var(--width-multiplier));
+}
+
+.clientChip {
+  font-size: calc(12 * var(--width-multiplier));
+  color: var(--text-secondary);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: calc(20 * var(--width-multiplier));
+  padding: calc(2 * var(--width-multiplier)) calc(9 * var(--width-multiplier));
+  white-space: nowrap;
+}
+
 .metrics {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
