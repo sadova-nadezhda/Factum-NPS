@@ -521,6 +521,10 @@
   color: var(--text-primary);
 }
 
+.projectIdColumn {
+  display: none;
+}
+
 .placeholder {
   text-align: center;
   padding: calc(32 * var(--width-multiplier));

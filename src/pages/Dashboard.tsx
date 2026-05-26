@@ -49,7 +49,7 @@ function NpsGauge({ score }: { score: number }) {
       {/* 0 tick */}
       <line x1="150" y1="14" x2="150" y2="30" stroke="white" strokeWidth="5" />
       {/* Score */}
-      <text x={cx} y={cy + 22} textAnchor="middle" fontSize="56" fontWeight="700" fill="#0F172A" fontFamily="Onest, sans-serif">{score}</text>
+      <text x={cx} y={cy + 22} textAnchor="middle" fontSize="56" fontWeight="700" fill="#0F172A" fontFamily="Onest, sans-serif">{score}%</text>
       {/* Range labels */}
       <text x={sx - 2}  y={cy + 32} textAnchor="middle" fontSize="11" fill="#94A3B8">-100</text>
       <text x={ex + 2}  y={cy + 32} textAnchor="middle" fontSize="11" fill="#94A3B8">100</text>
@@ -514,6 +514,7 @@ export default function Dashboard() {
                     <th className={s.th}>
                       <button className={s.sortBtn} onClick={() => toggleSort('date')}>Дата ↕</button>
                     </th>
+                    <th className={clsx(s.th, s.projectIdColumn)}>ID проекта</th>
                     <th className={s.th}>Услуга</th>
                     <th className={s.th}>Проект-менеджер</th>
                     <th className={s.th}>Компания</th>
@@ -526,10 +527,10 @@ export default function Dashboard() {
                 </thead>
                 <tbody>
                   {loading && (
-                    <tr><td colSpan={7} className={s.placeholder}>Загрузка из Битрикс24...</td></tr>
+                    <tr><td colSpan={8} className={s.placeholder}>Загрузка из Битрикс24...</td></tr>
                   )}
                   {!loading && paginated.length === 0 && (
-                    <tr><td colSpan={7} className={s.placeholder}>Нет записей</td></tr>
+                    <tr><td colSpan={8} className={s.placeholder}>Нет записей</td></tr>
                   )}
                   {!loading && paginated.map(r => (
                     <React.Fragment key={r.id}>
@@ -538,6 +539,7 @@ export default function Dashboard() {
                         onClick={() => handleRowClick(r)}
                       >
                         <td className={s.td}>{formatDate(r.date)}</td>
+                        <td className={clsx(s.td, s.projectIdColumn)}>{r.bitrixDealId || r.id || '—'}</td>
                         <td className={s.td}><ServiceTag service={r.service} /></td>
                         <td className={s.td}>{r.specialist || '—'}</td>
                         <td className={s.tdBold}>{r.company || '—'}</td>
@@ -547,10 +549,11 @@ export default function Dashboard() {
                       </tr>
                       {expandedId === r.id && (
                         <tr className={s.accordionRow}>
-                          <td colSpan={7} className={s.accordionCell} onClick={e => e.stopPropagation()}>
+                          <td colSpan={8} className={s.accordionCell} onClick={e => e.stopPropagation()}>
                             <div className={s.accordion}>
                               <div className={s.accordionGrid}>
                                 {[
+                                  { label: 'ID проекта', value: r.bitrixDealId || r.id },
                                   { label: 'Компания',   value: r.company },
                                   { label: 'Клиент',     value: r.client },
                                   { label: 'Телефон',    value: r.phone, phone: true },

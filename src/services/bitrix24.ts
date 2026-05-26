@@ -156,6 +156,12 @@ function formatContactName(contact: Partial<BitrixContact> = {}): string {
     .trim()
 }
 
+function formatFirstName(contact: Partial<BitrixContact> = {}): string {
+  return [contact.NAME, contact.SECOND_NAME, contact.LAST_NAME]
+    .find(part => typeof part === 'string' && part.trim())
+    ?.trim() ?? ''
+}
+
 function mapDealToRecord(
   deal: BitrixDeal,
   contacts: Record<string, BitrixContact>,
@@ -166,16 +172,16 @@ function mapDealToRecord(
   const categoryId = String(deal.CATEGORY_ID ?? '')
   const contact = contacts[String(deal.CONTACT_ID)] ?? {}
   const company = companies[String(deal.COMPANY_ID)] ?? {}
-  const managerId = deal.UF_CRM_1671013766 || deal.ASSIGNED_BY_ID
-  const user      = users[String(managerId)] ?? {}
+  const managerId = String(deal.UF_CRM_1671013766 ?? '').trim()
+  const user      = managerId ? (users[managerId] ?? {}) : {}
   return {
     id: String(deal.ID),
     bitrixDealId: String(deal.ID),
     project: deal.TITLE ?? '',
-    date: (deal.UF_CRM_1779345788788 || deal.DATE_CREATE)?.split('T')[0] ?? '',
+    date: deal.UF_CRM_1779345788788?.split('T')[0] ?? '',
     service: PROJECT_CATEGORY_SERVICE_MAP[categoryId] ?? 'Неизвестно',
     department: categoryId,
-    specialist: formatContactName(user) || String(managerId ?? ''),
+    specialist: formatFirstName(user),
     company: (company as { TITLE?: string }).TITLE ?? deal.COMPANY_TITLE ?? deal.TITLE ?? '',
     client: formatContactName(contact) || String(deal.CONTACT_ID ?? ''),
     contactId: String(deal.CONTACT_ID ?? ''),
@@ -202,7 +208,11 @@ async function fetchProjectsPageFromBitrix(start: number, scoreMaps: ScoreMaps):
 
   const contactIds = [...new Set(deals.map(d => d.CONTACT_ID).filter(Boolean).map(String))]
   const companyIds = [...new Set(deals.map(d => d.COMPANY_ID).filter(Boolean).map(String))]
-  const userIds    = [...new Set(deals.flatMap(d => [d.UF_CRM_1671013766 || d.ASSIGNED_BY_ID]).filter(Boolean).map(String))]
+  const userIds    = [...new Set(
+    deals
+      .map(d => String(d.UF_CRM_1671013766 ?? '').trim())
+      .filter(Boolean)
+  )]
 
   const [contacts, companies, users] = await Promise.all([
     fetchEntities('crm.contact.list', contactIds, ['ID', 'NAME', 'SECOND_NAME', 'LAST_NAME', 'PHONE']),
@@ -247,7 +257,11 @@ export const bitrix24 = {
       // Phase 2: fetch all unique entities in one round (3 parallel requests)
       const contactIds = [...new Set(allDeals.map(d => d.CONTACT_ID).filter(Boolean).map(String))]
       const companyIds = [...new Set(allDeals.map(d => d.COMPANY_ID).filter(Boolean).map(String))]
-      const userIds    = [...new Set(allDeals.flatMap(d => [d.UF_CRM_1671013766 || d.ASSIGNED_BY_ID]).filter(Boolean).map(String))]
+      const userIds    = [...new Set(
+        allDeals
+          .map(d => String(d.UF_CRM_1671013766 ?? '').trim())
+          .filter(Boolean)
+      )]
 
       const [contacts, companies, users] = await Promise.all([
         fetchEntities('crm.contact.list', contactIds, ['ID', 'NAME', 'SECOND_NAME', 'LAST_NAME', 'PHONE']),
